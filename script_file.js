@@ -5,7 +5,7 @@ const REGION_KEYWORDS = {
   tw: "(?:[tT]aiwan|[tT][wW]|台湾|台)",
   jp: "(?:[jJ]apan|[jJ][pP]|日本|日)",
   kr: "(?:[kK]orea|[kK][rR]|韩国|韩)",
-  us: "(?:[uU]nited\\s*[sS]tates|[uU][sS]|美国|美)",
+  us: "(?:[uU]nited\\s*[sS]tates|[uU][sS]|美国|美|America)",
 };
 const MULTI_KEYWORDS = "(x10|x8|x5|10倍|8倍|5倍)";
 
@@ -356,7 +356,15 @@ class ProxyGroupManager {
         name: "延迟选优",
         type: "url-test",
         tolerance: 100,
-        proxies: ["负载均衡", "香港节点", "新加坡节点", "台湾节点", "韩国节点"],
+        proxies: [
+          "负载均衡",
+          "香港节点",
+          "新加坡节点",
+          "台湾节点",
+          "韩国节点",
+          "日本节点",
+          "美国节点",
+        ],
         icon: `${iconBase}/speed.svg`,
       },
       {
@@ -537,9 +545,15 @@ class ProxyGroupManager {
 class RuleManager {
   static createRules() {
     return [
+      "DOMAIN-SUFFIX,linux.do,DIRECT",
+      "DOMAIN-SUFFIX,88code.org,DIRECT",
+      "DOMAIN-SUFFIX,privnode.com,DIRECT",
       // 系统规则
       "DOMAIN,clash.razord.top,DIRECT",
       "DOMAIN,yacd.haishan.me,DIRECT",
+
+      // AI服务
+      "RULE-SET,AI,美国节点",
 
       // 开发和工具
       "RULE-SET,Github,香港节点",
@@ -564,14 +578,11 @@ class RuleManager {
       "RULE-SET,netflix,解锁流媒体",
 
       // 搜索引擎
-      "RULE-SET,Google,香港节点",
-      "RULE-SET,GoogleCN,香港节点",
-      "RULE-SET,GoogleCNProxyIP,香港节点",
-      "RULE-SET,GoogleEarth,香港节点",
-      "RULE-SET,GoogleFCM,香港节点",
-
-      // AI服务
-      "RULE-SET,AI,美国节点",
+      "RULE-SET,Google,节点选择",
+      "RULE-SET,GoogleCN,节点选择",
+      "RULE-SET,GoogleCNProxyIP,节点选择",
+      "RULE-SET,GoogleEarth,节点选择",
+      "RULE-SET,GoogleFCM,节点选择",
 
       // 广告拦截
       "RULE-SET,BanAD,REJECT",
@@ -608,7 +619,7 @@ function main(config) {
       console.error("配置校验失败：", errors);
       return;
     }
-    const dnsConfig = DNSManager.createDNSConfig();
+    // const dnsConfig = DNSManager.createDNSConfig();
     const ruleProviders = RuleProviderManager.createRuleProviders();
     const proxyGroups = ProxyGroupManager.createProxyGroups();
     const rules = RuleManager.createRules();
@@ -616,7 +627,7 @@ function main(config) {
     // 返回合成后的配置对象
     return {
       ...config,
-      dns: dnsConfig,
+      // dns: dnsConfig,
       "rule-providers": ruleProviders,
       "proxy-groups": proxyGroups,
       rules,
@@ -632,7 +643,7 @@ if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     main,
     ConfigValidator,
-    DNSManager,
+    // DNSManager,
     RuleProviderManager,
     ProxyGroupManager,
     RuleManager,

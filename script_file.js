@@ -44,63 +44,6 @@ class ConfigValidator {
   }
 }
 
-// DNS配置管理器
-class DNSManager {
-  static getDomesticNameservers() {
-    return [
-      "https://dns.alidns.com/dns-query",
-      "https://doh.pub/dns-query",
-      "https://doh.360.cn/dns-query",
-    ];
-  }
-
-  static getForeignNameservers() {
-    return [
-      "https://1.1.1.1/dns-query",
-      "https://1.0.0.1/dns-query",
-      "https://208.67.222.222/dns-query",
-      "https://208.67.220.220/dns-query",
-      "https://194.242.2.2/dns-query",
-      "https://194.242.2.3/dns-query",
-    ];
-  }
-
-  static createDNSConfig() {
-    const domesticNameservers = this.getDomesticNameservers();
-    const foreignNameservers = this.getForeignNameservers();
-
-    return {
-      enable: true,
-      listen: "0.0.0.0:1053",
-      ipv6: true,
-      "use-system-hosts": false,
-      "cache-algorithm": "arc",
-      "enhanced-mode": "fake-ip",
-      "fake-ip-range": "198.18.0.1/16",
-      "fake-ip-filter": [
-        "+.lan",
-        "+.local",
-        "+.msftconnecttest.com",
-        "+.msftncsi.com",
-        "localhost.ptlogin2.qq.com",
-        "localhost.sec.qq.com",
-        "localhost.work.weixin.qq.com",
-      ],
-      "default-nameserver": ["223.5.5.5", "119.29.29.29", "1.1.1.1", "8.8.8.8"],
-      nameserver: [...domesticNameservers, ...foreignNameservers],
-      "proxy-server-nameserver": [
-        ...domesticNameservers,
-        ...foreignNameservers,
-      ],
-      "nameserver-policy": {
-        "geosite:private,cn,geolocation-cn": domesticNameservers,
-        "geosite:google,youtube,telegram,gfw,geolocation-!cn":
-          foreignNameservers,
-      },
-    };
-  }
-}
-
 // 规则提供器管理器
 class RuleProviderManager {
   static getRuleProviderCommon() {
@@ -619,7 +562,6 @@ function main(config) {
       console.error("配置校验失败：", errors);
       return;
     }
-    // const dnsConfig = DNSManager.createDNSConfig();
     const ruleProviders = RuleProviderManager.createRuleProviders();
     const proxyGroups = ProxyGroupManager.createProxyGroups();
     const rules = RuleManager.createRules();
@@ -627,7 +569,6 @@ function main(config) {
     // 返回合成后的配置对象
     return {
       ...config,
-      // dns: dnsConfig,
       "rule-providers": ruleProviders,
       "proxy-groups": proxyGroups,
       rules,
@@ -643,7 +584,6 @@ if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     main,
     ConfigValidator,
-    // DNSManager,
     RuleProviderManager,
     ProxyGroupManager,
     RuleManager,

@@ -15,20 +15,6 @@ class ConfigConstants {
   static ICON_BASE =
     "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons";
 
-  /** 测试地址 */
-  static TEST_URL = {
-    CLOUDFLARE: "http://cp.cloudflare.com/generate_204",
-    GOOGLE: "http://www.google.com/generate_204",
-    GSTATIC: "http://www.gstatic.com/generate_204",
-  };
-
-  // ===== DNS 配置 =====
-  /**
-   * DNS 服务器地址（已移除）
-   * 用户要求移除所有 DNS 配置，使用订阅源或客户端默认配置
-   */
-  // static DNS = { ... };
-
   // ===== 代理组配置 =====
   /** 代理组基础选项 */
   static PROXY_GROUP_BASE = {
@@ -78,16 +64,20 @@ class ConfigConstants {
   };
 
   /**
-   * 高倍率节点关键词
+   * 高倍率节点关键词（x2及以上）
    *
    * 匹配模式：
-   * - x数字：x2, x5, x10 等
-   * - 数字+倍/x：2倍, 5x, 10X 等
+   * - x2-x9：x2, x5, x9 等
+   * - x10及以上：x10, x15, x100 等
+   * - 2-9倍：2倍, 5x, 9X 等
+   * - 10倍及以上：10倍, 15x, 100X 等
    * - 特殊标识：Premium, Pro 等高级标识
+   *
+   * 注意：x1 或 1倍 不视为高倍率
    *
    * 用途：排除高倍率节点，避免混入普通地区节点组
    */
-  static MULTI_KEYWORDS = "(?:x\\d+|\\d+[xX倍]|Premium|Pro)";
+  static MULTI_KEYWORDS = "(?:x[2-9]|x[1-9]\\d+|[2-9][xX倍]|[1-9]\\d+[xX倍]|Premium|Pro)";
 
   // ===== 规则提供器配置 =====
   /** 规则提供器通用配置 */
@@ -97,10 +87,6 @@ class ConfigConstants {
     interval: 86400, // 24小时
   };
 }
-
-// 向后兼容：保留旧的常量引用
-const REGION_KEYWORDS = ConfigConstants.REGION_KEYWORDS;
-const MULTI_KEYWORDS = ConfigConstants.MULTI_KEYWORDS;
 
 /**
  * 配置验证器 - 验证 Clash 配置的有效性
@@ -142,19 +128,59 @@ class ConfigValidator {
 
 /**
  * 规则提供器管理器 - 管理所有规则集的配置
- * 包含 Loyalsoldier、blackmatrix7、ACL4SSR 三个来源的规则
+ * 包含 Loyalsoldier、blackmatrix7 两个来源的规则
  */
 class RuleProviderManager {
   static getRuleProviderCommon() {
     return ConfigConstants.RULE_PROVIDER_COMMON;
   }
 
+  /**
+   * 创建 blackmatrix7 规则集配置
+   * @param {string} name - 规则集名称
+   * @param {string} behavior - 规则行为类型 (classical/domain)
+   */
+  static createBlackmatrix7Rule(name, behavior = "classical") {
+    const common = this.getRuleProviderCommon();
+    const cdn = ConfigConstants.CDN;
+    return {
+      ...common,
+      behavior,
+      url: `${cdn.JSDELIVR}/blackmatrix7/ios_rule_script@master/rule/Clash/${name}/${name}.yaml`,
+      path: `./ruleset/blackmatrix7/${name}.yaml`,
+    };
+  }
+
   static createRuleProviders() {
     const common = this.getRuleProviderCommon();
     const cdn = ConfigConstants.CDN;
 
+    // blackmatrix7 规则列表（classical 格式）
+    const bm7Rules = [
+      "Google", "GoogleDrive", "GoogleEarth", "GoogleFCM", "GoogleSearch", "GoogleVoice",
+      "YouTube", "YouTubeMusic", "Discord", "Twitter", "Instagram", "Threads",
+      "Facebook", "Pixiv", "TikTok", "Twitch", "Telegram", "Spotify",
+    ];
+
+    // 生成 blackmatrix7 规则配置
+    const bm7RuleProviders = Object.fromEntries(
+      bm7Rules.map((name) => [name, this.createBlackmatrix7Rule(name)])
+    );
+
     return {
-      // Loyalsoldier规则集
+      // 自定义规则集
+      AI: {
+        type: "file",
+        behavior: "classical",
+        path: "./ruleset/custom/AI.yaml",
+      },
+      WebRTC: {
+        type: "file",
+        behavior: "classical",
+        path: "./ruleset/custom/WebRTC.yaml",
+      },
+
+      // Loyalsoldier 规则集
       direct: {
         ...common,
         behavior: "domain",
@@ -179,17 +205,17 @@ class RuleProviderManager {
         url: `${cdn.FASTLY_JSDELIVR}/Loyalsoldier/clash-rules@release/private.txt`,
         path: "./ruleset/loyalsoldier/private.yaml",
       },
-      apple: {
-        ...common,
-        behavior: "domain",
-        url: `${cdn.FASTLY_JSDELIVR}/Loyalsoldier/clash-rules@release/apple.txt`,
-        path: "./ruleset/loyalsoldier/apple.yaml",
-      },
       icloud: {
         ...common,
         behavior: "domain",
         url: `${cdn.FASTLY_JSDELIVR}/Loyalsoldier/clash-rules@release/icloud.txt`,
         path: "./ruleset/loyalsoldier/icloud.yaml",
+      },
+      apple: {
+        ...common,
+        behavior: "domain",
+        url: `${cdn.FASTLY_JSDELIVR}/Loyalsoldier/clash-rules@release/apple.txt`,
+        path: "./ruleset/loyalsoldier/apple.yaml",
       },
       gfw: {
         ...common,
@@ -202,6 +228,12 @@ class RuleProviderManager {
         behavior: "domain",
         url: `${cdn.FASTLY_JSDELIVR}/Loyalsoldier/clash-rules@release/tld-not-cn.txt`,
         path: "./ruleset/loyalsoldier/tld-not-cn.yaml",
+      },
+      telegramcidr: {
+        ...common,
+        behavior: "ipcidr",
+        url: `${cdn.FASTLY_JSDELIVR}/Loyalsoldier/clash-rules@release/telegramcidr.txt`,
+        path: "./ruleset/loyalsoldier/telegramcidr.yaml",
       },
       lancidr: {
         ...common,
@@ -222,137 +254,25 @@ class RuleProviderManager {
         path: "./ruleset/loyalsoldier/applications.yaml",
       },
 
-      // 流媒体和服务规则
-      netflix: {
+      // blackmatrix7 规则集 (特殊规则)
+      Netflix: {
         ...common,
         behavior: "classical",
         url: `${cdn.RAW_GITHUB}/blackmatrix7/ios_rule_script/release/rule/Clash/Netflix/Netflix.yaml`,
-        path: "./ruleset/blackmatrix7/netflix.yaml",
+        path: "./ruleset/blackmatrix7/Netflix.yaml",
       },
-      AI: {
-        type: "file",
-        behavior: "classical",
-        path: "./ruleset/blackmatrix7/AI.yaml",
-      },
+      GitHub: this.createBlackmatrix7Rule("GitHub"),
 
-      // ACL4SSR规则集
-      ProxyGFWlist: {
-        type: "file",
-        behavior: "classical",
-        path: "./ruleset/ACL4SSR/ProxyGFWlist.yaml",
-      },
-      Google: {
-        type: "file",
-        behavior: "classical",
-        path: "./ruleset/ACL4SSR/Google.yaml",
-      },
-      GoogleCN: {
-        type: "file",
-        behavior: "classical",
-        path: "./ruleset/ACL4SSR/GoogleCN.yaml",
-      },
-      GoogleCNProxyIP: {
-        type: "file",
-        behavior: "classical",
-        path: "./ruleset/ACL4SSR/GoogleCNProxyIP.yaml",
-      },
-      GoogleEarth: {
-        type: "file",
-        behavior: "classical",
-        path: "./ruleset/ACL4SSR/GoogleEarth.yaml",
-      },
-      GoogleFCM: {
-        type: "file",
-        behavior: "classical",
-        path: "./ruleset/ACL4SSR/GoogleFCM.yaml",
-      },
-      YouTube: {
-        type: "file",
-        behavior: "classical",
-        path: "./ruleset/ACL4SSR/YouTube.yaml",
-      },
-      YouTubeMusic: {
-        type: "file",
-        behavior: "classical",
-        path: "./ruleset/ACL4SSR/YouTubeMusic.yaml",
-      },
-      Discord: {
-        type: "file",
-        behavior: "classical",
-        path: "./ruleset/ACL4SSR/Discord.yaml",
-      },
-      Twitter: {
-        type: "file",
-        behavior: "classical",
-        path: "./ruleset/ACL4SSR/Twitter.yaml",
-      },
-      Instagram: {
-        type: "file",
-        behavior: "classical",
-        path: "./ruleset/ACL4SSR/Instagram.yaml",
-      },
-      Threads: {
-        type: "file",
-        behavior: "classical",
-        path: "./ruleset/ACL4SSR/Threads.yaml",
-      },
-      Facebook: {
-        type: "file",
-        behavior: "classical",
-        path: "./ruleset/ACL4SSR/Facebook.yaml",
-      },
-      Pixiv: {
-        type: "file",
-        behavior: "classical",
-        path: "./ruleset/ACL4SSR/Pixiv.yaml",
-      },
-      TikTok: {
-        type: "file",
-        behavior: "classical",
-        path: "./ruleset/ACL4SSR/TikTok.yaml",
-      },
-      Twitch: {
-        type: "file",
-        behavior: "classical",
-        path: "./ruleset/ACL4SSR/Twitch.yaml",
-      },
-      Telegram: {
-        type: "file",
-        behavior: "classical",
-        path: "./ruleset/ACL4SSR/Telegram.yaml",
-      },
-      Spotify: {
-        type: "file",
-        behavior: "classical",
-        path: "./ruleset/ACL4SSR/Spotify.yaml",
-      },
-
-      // 广告拦截规则
-      BanAD: {
-        type: "file",
-        behavior: "classical",
-        path: "./ruleset/ACL4SSR/BanAD.yaml",
-      },
-      BanEasyList: {
-        type: "file",
-        behavior: "classical",
-        path: "./ruleset/ACL4SSR/BanEasyList.yaml",
-      },
-      BanEasyListChina: {
-        type: "file",
-        behavior: "classical",
-        path: "./ruleset/ACL4SSR/BanEasyListChina.yaml",
-      },
-      Github: {
-        type: "file",
-        behavior: "classical",
-        path: "./ruleset/ACL4SSR/Github.yaml",
-      },
+      // blackmatrix7 规则集
+      ...bm7RuleProviders,
     };
   }
 }
 
-// 代理组管理器
+/**
+ * 代理组管理器 - 管理所有代理组的配置
+ * 包含节点选择、地区分组、负载均衡、功能分组等
+ */
 class ProxyGroupManager {
   static getGroupBaseOption() {
     return ConfigConstants.PROXY_GROUP_BASE;
@@ -437,6 +357,7 @@ class ProxyGroupManager {
    * 包含：香港、新加坡、台湾、日本、韩国、美国
    */
   static createRegionalGroups(base, iconBase) {
+    const { REGION_KEYWORDS, MULTI_KEYWORDS } = ConfigConstants;
     const regions = [
       {
         name: "香港节点",
@@ -487,6 +408,7 @@ class ProxyGroupManager {
    * 包含：高倍节点、其他节点
    */
   static createSpecialGroups(base, iconBase) {
+    const { REGION_KEYWORDS, MULTI_KEYWORDS } = ConfigConstants;
     return [
       {
         ...base,
@@ -504,7 +426,6 @@ class ProxyGroupManager {
         type: "select",
         tolerance: 100,
         "include-all": true,
-        // 排除所有地区节点
         filter: `^(?:(?!${Object.values(REGION_KEYWORDS).join("|")}).)*$`,
         proxies: ["REJECT"],
         icon: `${iconBase}/unknown.svg`,
@@ -594,110 +515,110 @@ class RuleManager {
    * @returns {string[]} 规则数组
    *
    * 规则优先级说明:
-   * 1. 直连域名 (最高优先级，避免被其他规则劫持)
-   * 2. 系统/工具规则 (Clash面板等)
-   * 3. AI服务 (需要特定地区节点)
-   * 4. 开发工具 (Github等)
-   * 5. 社交媒体 (根据服务特性选择节点)
-   * 6. 通讯应用
-   * 7. 流媒体服务
-   * 8. 搜索引擎
-   * 9. 广告拦截 (优先拦截，减少流量)
-   * 10. 基础规则集 (大范围匹配)
+   * 1. AI服务 (需要特定地区节点)
+   * 2. 开发工具 (GitHub等)
+   * 3. 社交媒体 (根据服务特性选择节点)
+   * 4. 通讯应用
+   * 5. 流媒体服务
+   * 6. 搜索引擎 (Google全系列)
+   * 7. 特殊规则 (指定节点或拦截)
+   * 8. 直连域名
+   * 9. 系统规则 (Clash面板等)
+   * 10. 基础规则集 (Loyalsoldier规则)
    * 11. 地理位置规则 (IP段匹配)
    * 12. 兜底规则 (最低优先级)
    */
   static createRules() {
     return [
       // ============================================
-      // 1. 直连域名 - 最高优先级
-      // ============================================
-      "DOMAIN-SUFFIX,linux.do,DIRECT",
-      "DOMAIN-SUFFIX,88code.org,DIRECT",
-      "DOMAIN-SUFFIX,privnode.com,DIRECT",
-
-      // ============================================
-      // 2. 系统规则 - Clash 面板和工具
-      // ============================================
-      "DOMAIN,clash.razord.top,DIRECT",
-      "DOMAIN,yacd.haishan.me,DIRECT",
-
-      // ============================================
-      // 3. AI 服务 - 需要美国节点
+      // 1. AI 服务 - 需要美国节点
       // ============================================
       "RULE-SET,AI,美国节点",
 
       // ============================================
-      // 4. 开发工具 - 优先使用香港节点
+      // 2. 开发工具 - 优先使用香港节点
       // ============================================
-      "RULE-SET,Github,香港节点",
+      "RULE-SET,GitHub,香港节点",
 
       // ============================================
-      // 5. 社交媒体 - 按服务特性分配节点
+      // 3. 社交媒体 - 按服务特性分配节点
       // ============================================
-      // Twitter 使用香港节点
       "RULE-SET,Twitter,香港节点",
-      // Instagram/Threads/Facebook/TikTok 使用韩国节点
       "RULE-SET,Instagram,韩国节点",
       "RULE-SET,Threads,韩国节点",
       "RULE-SET,Facebook,韩国节点",
       "RULE-SET,TikTok,韩国节点",
-      // 其他社交平台自动选择
       "RULE-SET,Discord,节点选择",
       "RULE-SET,Pixiv,节点选择",
 
       // ============================================
-      // 6. 通讯应用
+      // 4. 通讯应用
       // ============================================
       "RULE-SET,Telegram,节点选择",
+      
+      // ============================================
+      // 5. 搜索引擎 - Google 全系列
+      // ============================================
+      "RULE-SET,Google,美国节点",
+      "RULE-SET,GoogleDrive,美国节点",
+      "RULE-SET,GoogleEarth,美国节点",
+      "RULE-SET,GoogleFCM,美国节点",
+      "RULE-SET,GoogleSearch,美国节点",
+      "RULE-SET,GoogleVoice,美国节点",
 
       // ============================================
-      // 7. 流媒体服务
+      // 6. 流媒体服务
       // ============================================
       "RULE-SET,Twitch,节点选择",
       "RULE-SET,Spotify,节点选择",
       "RULE-SET,YouTube,节点选择",
       "RULE-SET,YouTubeMusic,节点选择",
-      "RULE-SET,netflix,解锁流媒体",
+      "RULE-SET,Netflix,解锁流媒体",
 
       // ============================================
-      // 8. 搜索引擎 - Google 全系列
+      // 7. 特殊规则 - 需要指定节点或拦截
       // ============================================
-      "RULE-SET,Google,节点选择",
-      "RULE-SET,GoogleCN,节点选择",
-      "RULE-SET,GoogleCNProxyIP,节点选择",
-      "RULE-SET,GoogleEarth,节点选择",
-      "RULE-SET,GoogleFCM,节点选择",
+      "RULE-SET,WebRTC,REJECT",
+      "DOMAIN-SUFFIX,battlenet.com,美国节点",
+      "DOMAIN-SUFFIX,anthropic.com,REJECT",
+      "DOMAIN-KEYWORD,openclaudecode,DIRECT",
 
       // ============================================
-      // 9. 广告拦截 - 优先级较高，减少后续规则匹配
+      // 8. 直连域名
       // ============================================
-      "RULE-SET,BanAD,REJECT",
-      "RULE-SET,BanEasyList,REJECT",
-      "RULE-SET,BanEasyListChina,REJECT",
+      "DOMAIN-SUFFIX,88code.org,DIRECT",
+      "DOMAIN-SUFFIX,privnode.com,DIRECT",
+
+      // ============================================
+      // 9. 系统规则 - Clash 面板和工具
+      // ============================================
+      "DOMAIN,clash.razord.top,DIRECT",
+      "DOMAIN,yacd.haishan.me,DIRECT",
 
       // ============================================
       // 10. 基础规则集 - Loyalsoldier 规则
       // ============================================
       "RULE-SET,private,DIRECT",      // 私有网络
-      "RULE-SET,reject,REJECT",       // 拒绝访问
-      "RULE-SET,icloud,DIRECT",       // iCloud 服务
-      "RULE-SET,apple,DIRECT",        // Apple 服务
+      "RULE-SET,icloud,DIRECT",       // iCloud服务
+      "RULE-SET,apple,DIRECT",        // Apple服务
+      "RULE-SET,reject,REJECT",       // 广告拦截
       "RULE-SET,proxy,节点选择",       // 需要代理的域名
       "RULE-SET,direct,DIRECT",       // 直连域名
-      "RULE-SET,lancidr,DIRECT",      // 局域网IP
-      "RULE-SET,cncidr,DIRECT",       // 中国大陆IP
+      "RULE-SET,gfw,节点选择",         // GFW列表
+      "RULE-SET,tldNotCn,节点选择",    // 非中国顶级域名
+      "RULE-SET,lancidr,DIRECT,no-resolve",      // 局域网IP
+      "RULE-SET,cncidr,DIRECT,no-resolve",       // 中国大陆IP
+      "RULE-SET,telegramcidr,节点选择,no-resolve", // Telegram IP段
       "RULE-SET,applications,DIRECT", // 常见软件
-      "RULE-SET,ProxyGFWlist,节点选择", // GFW列表
 
       // ============================================
       // 11. 地理位置规则 - IP 段匹配
       // ============================================
-      "GEOIP,LAN,DIRECT",  // 局域网
-      "GEOIP,CN,DIRECT",   // 中国大陆
+      "GEOIP,LAN,DIRECT,no-resolve",
+      "GEOIP,CN,DIRECT,no-resolve",
 
       // ============================================
-      // 12. 兜底规则 - 最低优先级，未匹配的流量
+      // 12. 兜底规则 - 最低优先级
       // ============================================
       "MATCH,漏网之鱼",
     ];
@@ -715,33 +636,11 @@ class RuleManager {
  * 2. 生成规则提供器配置 (rule-providers)
  * 3. 生成代理组配置 (proxy-groups)
  * 4. 生成路由规则 (rules)
- * 5. 生成DNS配置 (dns)
- * 6. 直接修改原始配置对象（Clash Verge 推荐方式）
+ * 5. 直接修改原始配置对象（Clash Verge 推荐方式）
  *
  * 错误处理:
- * - 配置验证失败: 输出错误信息到控制台，返回原始配置（保持服务可用）
- * - 运行时错误: 输出错误堆栈到控制台，返回 null
- *
- * 调试模式:
- * - 执行过程会输出详细的调试日志到控制台
- * - 可通过 Clash Verge 的日志查看执行状态
- *
- * 使用方法:
- * ```javascript
- * // 在 Clash 预处理脚本中使用
- * module.exports.parse = async (raw, { yaml }) => {
- *   const config = yaml.parse(raw);
- *   const result = main(config);
- *   return yaml.stringify(result);
- * };
- * ```
- *
- * @example
- * const config = { proxies: [...], "proxy-providers": {...} };
- * const result = main(config);
- * if (result) {
- *   console.log("配置生成成功");
- * }
+ * - 配置验证失败: 返回原始配置（保持服务可用）
+ * - 运行时错误: 返回 null
  */
 function main(config) {
   try {

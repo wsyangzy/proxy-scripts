@@ -658,14 +658,15 @@ class RuleManager {
       "PROCESS-NAME,Antigravity.exe,美国节点",
       "RULE-SET,WebRTC,REJECT",
       "DOMAIN-SUFFIX,battlenet.com,美国节点",
+      "DOMAIN-KEYWORD,hf.space,美国节点",
       "DOMAIN-SUFFIX,anthropic.com,REJECT",
-      "DOMAIN-KEYWORD,openclaudecode,DIRECT",
 
       // ============================================
       // 8. 直连域名
       // ============================================
       "DOMAIN-SUFFIX,88code.org,DIRECT",
       "DOMAIN-SUFFIX,privnode.com,DIRECT",
+      "DOMAIN-KEYWORD,openclaudecode,DIRECT",
 
       // ============================================
       // 9. 系统规则 - Clash 面板和工具

@@ -193,6 +193,8 @@ parsers: # array
 
       # 添加预处理规则
       prepend-rules: # 数组合并至原配置rules数组前，规则由上往下遍历，如上面规则已经命中，则不再往下处理
+        # 高优先级直连域名
+        - DOMAIN-KEYWORD,openclaudecode,DIRECT
         - DOMAIN-KEYWORD,spotify,♻️ 香港节点
         - DOMAIN-KEYWORD,google,♻️ 香港节点
         - DOMAIN-KEYWORD,youtube,♻️ 香港节点

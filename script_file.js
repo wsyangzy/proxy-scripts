@@ -270,6 +270,52 @@ class RuleProviderManager {
 }
 
 /**
+ * 节点工具类 - 提供节点名称提取和匹配检测功能
+ */
+class NodeUtils {
+  /**
+   * 从配置中提取所有可用节点名称
+   * @param {Object} config - Clash 配置对象
+   * @returns {string[]} 所有节点名称数组
+   */
+  static getAllNodeNames(config) {
+    const nodeNames = [];
+
+    // 从 proxies 数组提取节点名称
+    if (Array.isArray(config.proxies)) {
+      nodeNames.push(...config.proxies.map((proxy) => proxy.name));
+    }
+
+    // 从 proxy-providers 提取节点名称（如果有 proxies 字段）
+    if (config["proxy-providers"]) {
+      Object.values(config["proxy-providers"]).forEach((provider) => {
+        if (Array.isArray(provider.proxies)) {
+          nodeNames.push(...provider.proxies.map((proxy) => proxy.name));
+        }
+      });
+    }
+
+    return nodeNames;
+  }
+
+  /**
+   * 检测是否有节点匹配指定的过滤器
+   * @param {string[]} nodeNames - 所有节点名称
+   * @param {string} filterPattern - 正则表达式字符串
+   * @returns {boolean} 是否有匹配的节点
+   */
+  static hasMatchingNodes(nodeNames, filterPattern) {
+    try {
+      const regex = new RegExp(filterPattern);
+      return nodeNames.some((name) => regex.test(name));
+    } catch (error) {
+      // 正则表达式无效时返回 false
+      return false;
+    }
+  }
+}
+
+/**
  * 代理组管理器 - 管理所有代理组的配置
  * 包含节点选择、地区分组、负载均衡、功能分组等
  */
@@ -278,7 +324,7 @@ class ProxyGroupManager {
     return ConfigConstants.PROXY_GROUP_BASE;
   }
 
-  static createProxyGroups() {
+  static createProxyGroups(nodeNames = []) {
     const base = this.getGroupBaseOption();
     const iconBase = ConfigConstants.ICON_BASE;
 
@@ -342,9 +388,9 @@ class ProxyGroupManager {
         icon: `${iconBase}/ambulance.svg`,
       },
       // 地区节点组
-      ...this.createRegionalGroups(base, iconBase),
+      ...this.createRegionalGroups(base, iconBase, nodeNames),
       // 特殊节点组
-      ...this.createSpecialGroups(base, iconBase),
+      ...this.createSpecialGroups(base, iconBase, nodeNames),
       // 负载均衡组
       ...this.createLoadBalanceGroups(base, iconBase),
       // 功能组
@@ -355,8 +401,11 @@ class ProxyGroupManager {
   /**
    * 创建地区节点组
    * 包含：香港、新加坡、台湾、日本、韩国、美国
+   * @param {Object} base - 基础配置
+   * @param {string} iconBase - 图标基础路径
+   * @param {string[]} nodeNames - 所有可用节点名称
    */
-  static createRegionalGroups(base, iconBase) {
+  static createRegionalGroups(base, iconBase, nodeNames = []) {
     const { REGION_KEYWORDS, MULTI_KEYWORDS } = ConfigConstants;
     const regions = [
       {
@@ -391,46 +440,68 @@ class ProxyGroupManager {
       },
     ];
 
-    return regions.map((region) => ({
-      ...base,
-      name: region.name,
-      type: "url-test",
-      tolerance: 100,
-      "include-all": true,
-      filter: region.filter,
-      proxies: ["REJECT"],
-      icon: `${iconBase}/flags/${region.flag}.svg`,
-    }));
+    return regions.map((region) => {
+      const group = {
+        ...base,
+        name: region.name,
+        type: "url-test",
+        tolerance: 100,
+        "include-all": true,
+        filter: region.filter,
+        icon: `${iconBase}/flags/${region.flag}.svg`,
+      };
+
+      // 动态判断：如果没有匹配的节点，添加 REJECT 作为后备
+      if (!NodeUtils.hasMatchingNodes(nodeNames, region.filter)) {
+        group.proxies = ["REJECT"];
+      }
+
+      return group;
+    });
   }
 
   /**
    * 创建特殊节点组
    * 包含：高倍节点、其他节点
+   * @param {Object} base - 基础配置
+   * @param {string} iconBase - 图标基础路径
+   * @param {string[]} nodeNames - 所有可用节点名称
    */
-  static createSpecialGroups(base, iconBase) {
+  static createSpecialGroups(base, iconBase, nodeNames = []) {
     const { REGION_KEYWORDS, MULTI_KEYWORDS } = ConfigConstants;
-    return [
+
+    const specialGroups = [
       {
-        ...base,
         name: "高倍节点",
         type: "select",
         tolerance: 100,
         "include-all": true,
         filter: MULTI_KEYWORDS,
-        proxies: ["REJECT"],
         icon: `https://fastly.jsdelivr.net/gh/wsyangzy/My-Profiles@main/icon/urltest.svg`,
       },
       {
-        ...base,
         name: "其他节点",
         type: "select",
         tolerance: 100,
         "include-all": true,
         filter: `^(?:(?!${Object.values(REGION_KEYWORDS).join("|")}).)*$`,
-        proxies: ["REJECT"],
         icon: `${iconBase}/unknown.svg`,
       },
     ];
+
+    return specialGroups.map((groupConfig) => {
+      const group = {
+        ...base,
+        ...groupConfig,
+      };
+
+      // 动态判断：如果没有匹配的节点，添加 REJECT 作为后备
+      if (!NodeUtils.hasMatchingNodes(nodeNames, groupConfig.filter)) {
+        group.proxies = ["REJECT"];
+      }
+
+      return group;
+    });
   }
 
   static createLoadBalanceGroups(base, iconBase) {
@@ -531,6 +602,11 @@ class RuleManager {
   static createRules() {
     return [
       // ============================================
+      // 0. 高优先级直连域名 - 最先匹配
+      // ============================================
+ 
+
+      // ============================================
       // 1. AI 服务 - 需要美国节点
       // ============================================
       "RULE-SET,AI,美国节点",
@@ -578,6 +654,8 @@ class RuleManager {
       // ============================================
       // 7. 特殊规则 - 需要指定节点或拦截
       // ============================================
+      "PROCESS-NAME,language_server_windows_x64.exe,美国节点",
+      "PROCESS-NAME,Antigravity.exe,美国节点",
       "RULE-SET,WebRTC,REJECT",
       "DOMAIN-SUFFIX,battlenet.com,美国节点",
       "DOMAIN-SUFFIX,anthropic.com,REJECT",
@@ -633,10 +711,11 @@ class RuleManager {
  *
  * 功能说明:
  * 1. 验证输入配置的有效性
- * 2. 生成规则提供器配置 (rule-providers)
- * 3. 生成代理组配置 (proxy-groups)
- * 4. 生成路由规则 (rules)
- * 5. 直接修改原始配置对象（Clash Verge 推荐方式）
+ * 2. 提取所有可用节点名称
+ * 3. 生成规则提供器配置 (rule-providers)
+ * 4. 生成代理组配置 (proxy-groups，动态判断节点匹配情况)
+ * 5. 生成路由规则 (rules)
+ * 6. 直接修改原始配置对象（Clash Verge 推荐方式）
  *
  * 错误处理:
  * - 配置验证失败: 返回原始配置（保持服务可用）
@@ -651,9 +730,12 @@ function main(config) {
       return config;
     }
 
+    // 提取所有可用节点名称（用于动态判断节点匹配）
+    const nodeNames = NodeUtils.getAllNodeNames(config);
+
     // 生成各项配置
     const ruleProviders = RuleProviderManager.createRuleProviders();
-    const proxyGroups = ProxyGroupManager.createProxyGroups();
+    const proxyGroups = ProxyGroupManager.createProxyGroups(nodeNames);
     const rules = RuleManager.createRules();
 
     // 直接修改原配置对象（Clash Verge 推荐方式）
@@ -678,6 +760,7 @@ if (typeof module !== "undefined" && module.exports) {
     ConfigConstants,
     ConfigValidator,
     RuleProviderManager,
+    NodeUtils,
     ProxyGroupManager,
     RuleManager,
   };

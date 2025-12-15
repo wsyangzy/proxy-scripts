@@ -169,17 +169,29 @@ class RuleProviderManager {
 
     return {
       // 自定义规则集
+      // AI: {
+      //   type: "file",
+      //   behavior: "classical",
+      //   path: "./ruleset/custom/AI.yaml",
+      // },
+      // WebRTC: {
+      //   type: "file",
+      //   behavior: "classical",
+      //   path: "./ruleset/custom/WebRTC.yaml",
+      // },
       AI: {
-        type: "file",
-        behavior: "classical",
+        ...common,
+        behavior: "domain",
+        url: `http://117.72.34.53:3000/yangzhengyu/proxy-profiles/raw/branch/main/AI.yaml`,
         path: "./ruleset/custom/AI.yaml",
       },
       WebRTC: {
-        type: "file",
-        behavior: "classical",
+        ...common,
+        behavior: "domain",
+        url: `http://117.72.34.53:3000/yangzhengyu/proxy-profiles/raw/branch/main/WebRTC.yaml`,
         path: "./ruleset/custom/WebRTC.yaml",
       },
-
+      
       // Loyalsoldier 规则集
       direct: {
         ...common,

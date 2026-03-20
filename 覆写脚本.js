@@ -136,15 +136,30 @@ class RuleProviderManager {
   }
 
   /**
+   * 创建 Loyalsoldier 规则集配置
+   * @param {string} name - 规则集名称
+   * @param {string} behavior - 规则行为类型 (domain/ipcidr/classical)
+   * @param {string} [pathName] - 自定义路径名（默认与 name 相同）
+   */
+  static createLoyalsoldierRule(name, behavior = "domain", pathName) {
+    const cdn = ConfigConstants.CDN;
+    return {
+      ...this.getRuleProviderCommon(),
+      behavior,
+      url: `${cdn.FASTLY_JSDELIVR}/Loyalsoldier/clash-rules@release/${name}.txt`,
+      path: `./ruleset/loyalsoldier/${pathName || name}.yaml`,
+    };
+  }
+
+  /**
    * 创建 blackmatrix7 规则集配置
    * @param {string} name - 规则集名称
    * @param {string} behavior - 规则行为类型 (classical/domain)
    */
   static createBlackmatrix7Rule(name, behavior = "classical") {
-    const common = this.getRuleProviderCommon();
     const cdn = ConfigConstants.CDN;
     return {
-      ...common,
+      ...this.getRuleProviderCommon(),
       behavior,
       url: `${cdn.JSDELIVR}/blackmatrix7/ios_rule_script@master/rule/Clash/${name}/${name}.yaml`,
       path: `./ruleset/blackmatrix7/${name}.yaml`,
@@ -152,12 +167,11 @@ class RuleProviderManager {
   }
 
   static createRuleProviders() {
-    const common = this.getRuleProviderCommon();
     const cdn = ConfigConstants.CDN;
 
     // blackmatrix7 规则列表（classical 格式）
     const bm7Rules = [
-      "Google", "GoogleDrive", "GoogleEarth", "GoogleFCM", "GoogleSearch", "GoogleVoice",
+      "Google", "GoogleFCM",
       "YouTube", "YouTubeMusic", "Discord", "Twitter", "Instagram", "Threads",
       "Facebook", "Pixiv", "TikTok", "Twitch", "Telegram", "Spotify",
     ];
@@ -169,106 +183,38 @@ class RuleProviderManager {
 
     return {
       // 自定义规则集
-      // AI: {
-      //   type: "file",
-      //   behavior: "classical",
-      //   path: "./ruleset/custom/AI.yaml",
-      // },
-      // WebRTC: {
-      //   type: "file",
-      //   behavior: "classical",
-      //   path: "./ruleset/custom/WebRTC.yaml",
-      // },
       AI: {
-        ...common,
-        behavior: "domain",
-        url: `http://117.72.34.53:3000/yangzhengyu/proxy-profiles/raw/branch/main/AI.yaml`,
+        type: "file",
+        behavior: "classical",
         path: "./ruleset/custom/AI.yaml",
       },
       WebRTC: {
-        ...common,
-        behavior: "domain",
-        url: `http://117.72.34.53:3000/yangzhengyu/proxy-profiles/raw/branch/main/WebRTC.yaml`,
+        type: "file",
+        behavior: "classical",
         path: "./ruleset/custom/WebRTC.yaml",
       },
-      
-      // Loyalsoldier 规则集
-      direct: {
-        ...common,
-        behavior: "domain",
-        url: `${cdn.FASTLY_JSDELIVR}/Loyalsoldier/clash-rules@release/direct.txt`,
-        path: "./ruleset/loyalsoldier/direct.yaml",
-      },
-      proxy: {
-        ...common,
-        behavior: "domain",
-        url: `${cdn.FASTLY_JSDELIVR}/Loyalsoldier/clash-rules@release/proxy.txt`,
-        path: "./ruleset/loyalsoldier/proxy.yaml",
-      },
-      reject: {
-        ...common,
-        behavior: "domain",
-        url: `${cdn.FASTLY_JSDELIVR}/Loyalsoldier/clash-rules@release/reject.txt`,
-        path: "./ruleset/loyalsoldier/reject.yaml",
-      },
-      private: {
-        ...common,
-        behavior: "domain",
-        url: `${cdn.FASTLY_JSDELIVR}/Loyalsoldier/clash-rules@release/private.txt`,
-        path: "./ruleset/loyalsoldier/private.yaml",
-      },
-      icloud: {
-        ...common,
-        behavior: "domain",
-        url: `${cdn.FASTLY_JSDELIVR}/Loyalsoldier/clash-rules@release/icloud.txt`,
-        path: "./ruleset/loyalsoldier/icloud.yaml",
-      },
-      apple: {
-        ...common,
-        behavior: "domain",
-        url: `${cdn.FASTLY_JSDELIVR}/Loyalsoldier/clash-rules@release/apple.txt`,
-        path: "./ruleset/loyalsoldier/apple.yaml",
-      },
-      gfw: {
-        ...common,
-        behavior: "domain",
-        url: `${cdn.FASTLY_JSDELIVR}/Loyalsoldier/clash-rules@release/gfw.txt`,
-        path: "./ruleset/loyalsoldier/gfw.yaml",
-      },
-      tldNotCn: {
-        ...common,
-        behavior: "domain",
-        url: `${cdn.FASTLY_JSDELIVR}/Loyalsoldier/clash-rules@release/tld-not-cn.txt`,
-        path: "./ruleset/loyalsoldier/tld-not-cn.yaml",
-      },
-      telegramcidr: {
-        ...common,
-        behavior: "ipcidr",
-        url: `${cdn.FASTLY_JSDELIVR}/Loyalsoldier/clash-rules@release/telegramcidr.txt`,
-        path: "./ruleset/loyalsoldier/telegramcidr.yaml",
-      },
-      lancidr: {
-        ...common,
-        behavior: "ipcidr",
-        url: `${cdn.FASTLY_JSDELIVR}/Loyalsoldier/clash-rules@release/lancidr.txt`,
-        path: "./ruleset/loyalsoldier/lancidr.yaml",
-      },
-      cncidr: {
-        ...common,
-        behavior: "ipcidr",
-        url: `${cdn.FASTLY_JSDELIVR}/Loyalsoldier/clash-rules@release/cncidr.txt`,
-        path: "./ruleset/loyalsoldier/cncidr.yaml",
-      },
-      applications: {
-        ...common,
-        behavior: "classical",
-        url: `${cdn.FASTLY_JSDELIVR}/Loyalsoldier/clash-rules@release/applications.txt`,
-        path: "./ruleset/loyalsoldier/applications.yaml",
-      },
 
-      // blackmatrix7 规则集 (特殊规则)
+      // Loyalsoldier 规则集 (domain 格式)
+      ...Object.fromEntries(
+        ["direct", "proxy", "reject", "private", "icloud", "apple", "gfw"].map(
+          (name) => [name, this.createLoyalsoldierRule(name)]
+        )
+      ),
+      tldNotCn: this.createLoyalsoldierRule("tld-not-cn", "domain", "tld-not-cn"),
+
+      // Loyalsoldier 规则集 (ipcidr 格式)
+      ...Object.fromEntries(
+        ["telegramcidr", "lancidr", "cncidr"].map(
+          (name) => [name, this.createLoyalsoldierRule(name, "ipcidr")]
+        )
+      ),
+
+      // Loyalsoldier 规则集 (classical 格式)
+      applications: this.createLoyalsoldierRule("applications", "classical"),
+
+      // blackmatrix7 规则集 (特殊规则 - Netflix 使用 release 分支，URL 格式与其他不同)
       Netflix: {
-        ...common,
+        ...this.getRuleProviderCommon(),
         behavior: "classical",
         url: `${cdn.RAW_GITHUB}/blackmatrix7/ios_rule_script/release/rule/Clash/Netflix/Netflix.yaml`,
         path: "./ruleset/blackmatrix7/Netflix.yaml",
@@ -287,6 +233,14 @@ class RuleProviderManager {
 class NodeUtils {
   /**
    * 从配置中提取所有可用节点名称
+   *
+   * 注意：proxy-providers 在脚本预处理阶段通常尚未加载，
+   * 其 proxies 字段可能为空。因此节点匹配检测主要依赖
+   * proxies 数组中的静态节点。对于纯 proxy-providers 的
+   * 订阅，hasMatchingNodes 将始终返回 false，
+   * 此时代理组会添加 REJECT 作为后备（不影响实际使用，
+   * 因为 include-all 会在运行时动态加载节点）。
+   *
    * @param {Object} config - Clash 配置对象
    * @returns {string[]} 所有节点名称数组
    */
@@ -321,7 +275,7 @@ class NodeUtils {
       const regex = new RegExp(filterPattern);
       return nodeNames.some((name) => regex.test(name));
     } catch (error) {
-      // 正则表达式无效时返回 false
+      console.error(`[覆写脚本] 正则匹配失败: ${filterPattern}`, error.message);
       return false;
     }
   }
@@ -486,7 +440,6 @@ class ProxyGroupManager {
       {
         name: "高倍节点",
         type: "select",
-        tolerance: 100,
         "include-all": true,
         filter: MULTI_KEYWORDS,
         icon: `https://fastly.jsdelivr.net/gh/wsyangzy/My-Profiles@main/icon/urltest.svg`,
@@ -494,9 +447,8 @@ class ProxyGroupManager {
       {
         name: "其他节点",
         type: "select",
-        tolerance: 100,
         "include-all": true,
-        filter: `^(?:(?!${Object.values(REGION_KEYWORDS).join("|")}).)*$`,
+        filter: `^(?:(?!${Object.values(REGION_KEYWORDS).join("|")}|${MULTI_KEYWORDS}).)*$`,
         icon: `${iconBase}/unknown.svg`,
       },
     ];
@@ -581,7 +533,7 @@ class ProxyGroupManager {
         ...base,
         name: "漏网之鱼",
         type: "select",
-        proxies: ["节点选择", "延迟选优", "故障转移", "负载均衡", "全局直连"],
+        proxies: ["节点选择", "延迟选优", "故障转移", "负载均衡", "香港节点", "全局直连"],
         icon: `${iconBase}/fish.svg`,
       },
     ];
@@ -616,7 +568,8 @@ class RuleManager {
       // ============================================
       // 0. 高优先级直连域名 - 最先匹配
       // ============================================
- 
+      "DOMAIN-SUFFIX,aowu.tv,DIRECT",
+      "DOMAIN-KEYWORD,oracle,DIRECT",
 
       // ============================================
       // 1. AI 服务 - 需要美国节点
@@ -637,22 +590,20 @@ class RuleManager {
       "RULE-SET,Facebook,韩国节点",
       "RULE-SET,TikTok,韩国节点",
       "RULE-SET,Discord,节点选择",
-      "RULE-SET,Pixiv,节点选择",
+      "RULE-SET,Pixiv,日本节点",
+      "DOMAIN-SUFFIX,linux.do,节点选择",
 
       // ============================================
       // 4. 通讯应用
       // ============================================
       "RULE-SET,Telegram,节点选择",
-      
+
       // ============================================
       // 5. 搜索引擎 - Google 全系列
       // ============================================
       "RULE-SET,Google,美国节点",
-      "RULE-SET,GoogleDrive,美国节点",
-      "RULE-SET,GoogleEarth,美国节点",
       "RULE-SET,GoogleFCM,美国节点",
-      "RULE-SET,GoogleSearch,美国节点",
-      "RULE-SET,GoogleVoice,美国节点",
+      "DOMAIN-KEYWORD,microsoft365,美国节点",
 
       // ============================================
       // 6. 流媒体服务
@@ -668,17 +619,31 @@ class RuleManager {
       // ============================================
       "PROCESS-NAME,language_server_windows_x64.exe,美国节点",
       "PROCESS-NAME,Antigravity.exe,美国节点",
+      "PROCESS-NAME,Code.exe,DIRECT",
       "RULE-SET,WebRTC,REJECT",
       "DOMAIN-SUFFIX,battlenet.com,美国节点",
+      "DOMAIN-SUFFIX,battle.net,美国节点",
+      "DOMAIN-SUFFIX,blizzard.com,美国节点",
       "DOMAIN-KEYWORD,hf.space,美国节点",
-      "DOMAIN-SUFFIX,anthropic.com,REJECT",
+      // "DOMAIN-SUFFIX,anthropic.com,REJECT",
+      "DOMAIN-SUFFIX,anyrouter.top,香港节点",
+      // "DOMAIN-SUFFIX,a-ocnfniawgw.cn-shanghai.fcapp.run,香港节点",
+      "DOMAIN-KEYWORD,elysiver,香港节点",
 
       // ============================================
       // 8. 直连域名
       // ============================================
-      "DOMAIN-SUFFIX,88code.org,DIRECT",
       "DOMAIN-SUFFIX,privnode.com,DIRECT",
       "DOMAIN-KEYWORD,openclaudecode,DIRECT",
+      "DOMAIN-SUFFIX,right.codes,DIRECT",
+      "DOMAIN-SUFFIX,featureassets.org,DIRECT",
+      "DOMAIN-KEYWORD,foxcode,DIRECT",
+      "DOMAIN-KEYWORD,88code,DIRECT",
+      "DOMAIN-KEYWORD,duckcoding,DIRECT",
+      "DOMAIN-SUFFIX,packyapi.com,DIRECT",
+      "DOMAIN-SUFFIX,cubence.com,DIRECT",
+      "DOMAIN-KEYWORD,elysia,DIRECT",
+
 
       // ============================================
       // 9. 系统规则 - Clash 面板和工具
@@ -758,7 +723,7 @@ function main(config) {
 
     return config;
   } catch (error) {
-    // 严重错误返回 null，让调用者处理
+    console.error(`[覆写脚本] 致命错误: ${error.message}`, error.stack);
     return null;
   }
 }

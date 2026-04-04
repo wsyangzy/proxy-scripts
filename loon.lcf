@@ -1,79 +1,83 @@
 # Loon 配置文件
-# 基于 Clash Verge 覆写脚本转换
+# 基于 Clash Verge 覆写脚本架构
 # 最后更新：2026-04-04
 
 [General]
-# IPv6 支持
 ipv6 = false
-# 跳过代理
 skip-proxy = 192.168.0.0/16, 10.0.0.0/8, 172.16.0.0/12, localhost, *.local, captive.apple.com
-# 旁路隧道
 bypass-tun = 10.0.0.0/8, 100.64.0.0/10, 127.0.0.0/8, 169.254.0.0/16, 172.16.0.0/12, 192.0.0.0/24, 192.0.2.0/24, 192.88.99.0/24, 192.168.0.0/16, 198.51.100.0/24, 203.0.113.0/24, 224.0.0.0/4, 255.255.255.255/32
-# DNS 服务器
-dns-server = 223.5.5.5, 119.29.29.29, 114.114.114.114
-# DoH 服务器
+dns-server = system
 doh-server = https://doh.pub/dns-query, https://dns.alidns.com/dns-query
-# 允许 WiFi 访问
 allow-wifi-access = false
 wifi-access-http-port = 7222
 wifi-access-socks5-port = 7221
-# 代理测速 URL
 proxy-test-url = http://cp.cloudflare.com/generate_204
-# 测速超时
-test-timeout = 3
-# 接口模式
+test-timeout = 5
 interface-mode = auto
-# 资源解析器
-resource-parser = https://gitlab.com/lodepuly/vpn_tool/-/raw/main/Resource/Script/Sub-Store/sub-store-parser_for_loon.js
+disable-stun = true
+disable-udp-quic = false
 
 [Host]
-# 本地 DNS 映射
 
 [Proxy]
-# 本地节点配置（如有）
 
 [Remote Proxy]
 # 机场订阅（请替换为你的订阅链接）
-# 机场订阅 = 订阅URL, parser-enabled = true, udp=true, fast-open=true, vmess-aead=true, enabled=true
+# 示例：机场订阅 = 订阅URL, parser-enabled = true, udp = true, fast-open = true, vmess-aead = true, enabled = true
 
 [Remote Filter]
-# 节点筛选器
-香港节点 = NameRegex, FilterKey = "(?i)(🇭🇰|港|HK|Hong)"
-新加坡节点 = NameRegex, FilterKey = "(?i)(🇸🇬|新加坡|坡|狮城|SG|Singapore)"
-台湾节点 = NameRegex, FilterKey = "(?i)(🇹🇼|台|TW|Taiwan)"
-日本节点 = NameRegex, FilterKey = "(?i)(🇯🇵|日本|东京|JP|Japan)"
-韩国节点 = NameRegex, FilterKey = "(?i)(🇰🇷|韩|KR|Korea)"
-美国节点 = NameRegex, FilterKey = "(?i)(🇺🇸|美|US|States|American)"
-全部节点 = NameRegex, FilterKey = ".*"
+香港节点 = NameRegex, FilterKey = "^(?=.*((?i)🇭🇰|香港|(\b(HK|Hong)\b)))(?!.*((?i)回国|校园|游戏|(\b(GAME)\b))).*$"
+台湾节点 = NameRegex, FilterKey = "^(?=.*((?i)🇹🇼|台湾|(\b(TW|Tai|Taiwan)\b)))(?!.*((?i)回国|校园|游戏|(\b(GAME)\b))).*$"
+日本节点 = NameRegex, FilterKey = "^(?=.*((?i)🇯🇵|日本|川日|东京|大阪|泉日|埼玉|(\b(JP|Japan)\b)))(?!.*((?i)回国|校园|游戏|(\b(GAME)\b))).*$"
+韩国节点 = NameRegex, FilterKey = "^(?=.*((?i)🇰🇷|韩国|韓|首尔|(\b(KR|Korea)\b)))(?!.*((?i)回国|校园|游戏|(\b(GAME)\b))).*$"
+新加坡节点 = NameRegex, FilterKey = "^(?=.*((?i)🇸🇬|新加坡|狮|(\b(SG|Singapore)\b)))(?!.*((?i)回国|校园|游戏|(\b(GAME)\b))).*$"
+美国节点 = NameRegex, FilterKey = "^(?=.*((?i)🇺🇸|美国|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|(\b(US|United States)\b)))(?!.*((?i)回国|校园|游戏|(\b(GAME)\b))).*$"
 
 [Proxy Group]
-# 主策略选择
-节点选择 = select, 延迟选优, 故障转移, 负载均衡, 香港节点, 新加坡节点, 台湾节点, 日本节点, 韩国节点, 美国节点, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Proxy.png
+# ===== 主策略选择 =====
+节点选择 = select, 延迟选优, 故障转移, 负载均衡, 香港节点, 台湾节点, 日本节点, 韩国节点, 新加坡节点, 美国节点, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Proxy.png
 
-# 延迟选优（自动选择最快节点）
-延迟选优 = url-test, 全部节点, url = http://cp.cloudflare.com/generate_204, interval = 300, tolerance = 100, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png
+# ===== 自动策略（全局）=====
+延迟选优 = select, 香港时延优选, 台湾时延优选, 日本时延优选, 韩国时延优选, 新国时延优选, 美国时延优选, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png
 
-# 故障转移
-故障转移 = fallback, 香港节点, 新加坡节点, 台湾节点, 日本节点, 韩国节点, 美国节点, url = http://cp.cloudflare.com/generate_204, interval = 300, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Available.png
+故障转移 = select, 香港故障转移, 台湾故障转移, 日本故障转移, 韩国故障转移, 新国故障转移, 美国故障转移, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Available.png
 
-# 负载均衡
-负载均衡 = load-balance, 香港节点, 新加坡节点, 台湾节点, 日本节点, 韩国节点, url = http://cp.cloudflare.com/generate_204, interval = 300, algorithm = pcc, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/LoadBalance.png
+负载均衡 = select, 香港负载均衡, 台湾负载均衡, 日本负载均衡, 韩国负载均衡, 新国负载均衡, 美国负载均衡, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/LoadBalance.png
 
-# 地区节点组
-香港节点 = url-test, 香港节点, url = http://cp.cloudflare.com/generate_204, interval = 300, tolerance = 100, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
+# ===== 地区节点组（可选择自动策略类型）=====
+香港节点 = select, 香港时延优选, 香港故障转移, 香港负载均衡, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
+台湾节点 = select, 台湾时延优选, 台湾故障转移, 台湾负载均衡, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Taiwan.png
+日本节点 = select, 日本时延优选, 日本故障转移, 日本负载均衡, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png
+韩国节点 = select, 韩国时延优选, 韩国故障转移, 韩国负载均衡, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Korea.png
+新加坡节点 = select, 新国时延优选, 新国故障转移, 新国负载均衡, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png
+美国节点 = select, 美国时延优选, 美国故障转移, 美国负载均衡, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png
 
-新加坡节点 = url-test, 新加坡节点, url = http://cp.cloudflare.com/generate_204, interval = 300, tolerance = 100, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png
+# ===== 时延优选（底层自动策略）=====
+香港时延优选 = url-test, 香港节点, url = http://cp.cloudflare.com/generate_204, interval = 300, tolerance = 100, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
+台湾时延优选 = url-test, 台湾节点, url = http://cp.cloudflare.com/generate_204, interval = 300, tolerance = 100, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Taiwan.png
+日本时延优选 = url-test, 日本节点, url = http://cp.cloudflare.com/generate_204, interval = 300, tolerance = 100, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png
+韩国时延优选 = url-test, 韩国节点, url = http://cp.cloudflare.com/generate_204, interval = 300, tolerance = 100, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Korea.png
+新国时延优选 = url-test, 新加坡节点, url = http://cp.cloudflare.com/generate_204, interval = 300, tolerance = 100, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png
+美国时延优选 = url-test, 美国节点, url = http://cp.cloudflare.com/generate_204, interval = 300, tolerance = 100, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png
 
-台湾节点 = url-test, 台湾节点, url = http://cp.cloudflare.com/generate_204, interval = 300, tolerance = 100, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Taiwan.png
+# ===== 故障转移（底层自动策略）=====
+香港故障转移 = fallback, 香港节点, url = http://cp.cloudflare.com/generate_204, interval = 300, max-timeout = 3000, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
+台湾故障转移 = fallback, 台湾节点, url = http://cp.cloudflare.com/generate_204, interval = 300, max-timeout = 3000, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Taiwan.png
+日本故障转移 = fallback, 日本节点, url = http://cp.cloudflare.com/generate_204, interval = 300, max-timeout = 3000, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png
+韩国故障转移 = fallback, 韩国节点, url = http://cp.cloudflare.com/generate_204, interval = 300, max-timeout = 3000, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Korea.png
+新国故障转移 = fallback, 新加坡节点, url = http://cp.cloudflare.com/generate_204, interval = 300, max-timeout = 3000, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png
+美国故障转移 = fallback, 美国节点, url = http://cp.cloudflare.com/generate_204, interval = 300, max-timeout = 3000, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png
 
-日本节点 = url-test, 日本节点, url = http://cp.cloudflare.com/generate_204, interval = 300, tolerance = 100, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png
+# ===== 负载均衡（底层自动策略）=====
+香港负载均衡 = load-balance, 香港节点, url = http://cp.cloudflare.com/generate_204, interval = 300, max-timeout = 3000, algorithm = pcc, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
+台湾负载均衡 = load-balance, 台湾节点, url = http://cp.cloudflare.com/generate_204, interval = 300, max-timeout = 3000, algorithm = pcc, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Taiwan.png
+日本负载均衡 = load-balance, 日本节点, url = http://cp.cloudflare.com/generate_204, interval = 300, max-timeout = 3000, algorithm = pcc, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png
+韩国负载均衡 = load-balance, 韩国节点, url = http://cp.cloudflare.com/generate_204, interval = 300, max-timeout = 3000, algorithm = pcc, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Korea.png
+新国负载均衡 = load-balance, 新加坡节点, url = http://cp.cloudflare.com/generate_204, interval = 300, max-timeout = 3000, algorithm = pcc, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png
+美国负载均衡 = load-balance, 美国节点, url = http://cp.cloudflare.com/generate_204, interval = 300, max-timeout = 3000, algorithm = pcc, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png
 
-韩国节点 = url-test, 韩国节点, url = http://cp.cloudflare.com/generate_204, interval = 300, tolerance = 100, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Korea.png
-
-美国节点 = url-test, 美国节点, url = http://cp.cloudflare.com/generate_204, interval = 300, tolerance = 100, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png
-
-# 功能组
-解锁流媒体 = select, DIRECT, 节点选择, 延迟选优, 香港节点, 新加坡节点, 台湾节点, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png
+# ===== 功能策略组 =====
+解锁流媒体 = select, DIRECT, 节点选择, 延迟选优, 故障转移, 负载均衡, 香港节点, 新加坡节点, 台湾节点, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png
 
 全局直连 = select, DIRECT, 节点选择, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Direct.png
 
@@ -82,33 +86,28 @@ resource-parser = https://gitlab.com/lodepuly/vpn_tool/-/raw/main/Resource/Scrip
 漏网之鱼 = select, 节点选择, 延迟选优, 故障转移, 负载均衡, 香港节点, 全局直连, img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Final.png
 
 [Remote Rule]
-# Loyalsoldier 规则集
-https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/reject.txt, policy = 全局拦截, tag = 广告拦截, enabled = true
-https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/icloud.txt, policy = 全局直连, tag = iCloud, enabled = true
-https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/apple.txt, policy = 全局直连, tag = Apple, enabled = true
-https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/proxy.txt, policy = 节点选择, tag = 代理域名, enabled = true
-https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/direct.txt, policy = 全局直连, tag = 直连域名, enabled = true
-https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/gfw.txt, policy = 节点选择, tag = GFW, enabled = true
-https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/tld-not-cn.txt, policy = 节点选择, tag = 非中国域名, enabled = true
-https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/telegramcidr.txt, policy = 节点选择, tag = Telegram IP, enabled = true
-https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/cncidr.txt, policy = 全局直连, tag = 中国IP, enabled = true
-
 # blackmatrix7 规则集
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Telegram/Telegram.list, policy = 节点选择, tag = Telegram, enabled = true
 https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/GitHub/GitHub.list, policy = 香港节点, tag = GitHub, enabled = true
 https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Google/Google.list, policy = 美国节点, tag = Google, enabled = true
 https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/YouTube/YouTube.list, policy = 节点选择, tag = YouTube, enabled = true
 https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Netflix/Netflix.list, policy = 解锁流媒体, tag = Netflix, enabled = true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Disney/Disney.list, policy = 解锁流媒体, tag = Disney+, enabled = true
 https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Twitter/Twitter.list, policy = 香港节点, tag = Twitter, enabled = true
-https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Instagram/Instagram.list, policy = 韩国节点, tag = Instagram, enabled = true
 https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Facebook/Facebook.list, policy = 韩国节点, tag = Facebook, enabled = true
-https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Telegram/Telegram.list, policy = 节点选择, tag = Telegram, enabled = true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Instagram/Instagram.list, policy = 韩国节点, tag = Instagram, enabled = true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Spotify/Spotify.list, policy = 节点选择, tag = Spotify, enabled = true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/TikTok/TikTok.list, policy = 新加坡节点, tag = TikTok, enabled = true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/OpenAI/OpenAI.list, policy = 美国节点, tag = OpenAI, enabled = true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Microsoft/Microsoft.list, policy = 节点选择, tag = Microsoft, enabled = true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Apple/Apple.list, policy = 全局直连, tag = Apple, enabled = true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Proxy/Proxy.list, policy = 节点选择, tag = 全球代理, enabled = true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/China/China.list, policy = 全局直连, tag = 国内网站, enabled = true
 
 [Rule]
-# 高优先级直连域名
+# 本地规则
 DOMAIN-SUFFIX, aowu.tv, 全局直连
 DOMAIN-KEYWORD, oracle, 全局直连
-
-# 特殊规则
 DOMAIN-SUFFIX, linux.do, 节点选择
 DOMAIN-SUFFIX, battlenet.com, 美国节点
 DOMAIN-SUFFIX, battle.net, 美国节点
@@ -116,8 +115,6 @@ DOMAIN-SUFFIX, blizzard.com, 美国节点
 DOMAIN-KEYWORD, hf.space, 美国节点
 DOMAIN-SUFFIX, anyrouter.top, 香港节点
 DOMAIN-KEYWORD, elysiver, 香港节点
-
-# 直连域名
 DOMAIN-SUFFIX, privnode.com, 全局直连
 DOMAIN-KEYWORD, openclaudecode, 全局直连
 DOMAIN-SUFFIX, right.codes, 全局直连
@@ -128,30 +125,16 @@ DOMAIN-KEYWORD, duckcoding, 全局直连
 DOMAIN-SUFFIX, packyapi.com, 全局直连
 DOMAIN-SUFFIX, cubence.com, 全局直连
 DOMAIN-KEYWORD, elysia, 全局直连
-
-# 系统规则
-DOMAIN, clash.razord.top, 全局直连
-DOMAIN, yacd.haishan.me, 全局直连
-
-# 地理位置规则
 GEOIP, CN, 全局直连
-# 兜底规则
 FINAL, 漏网之鱼
 
 [URL Rewrite]
-# URL 重写规则
 
 [Remote Rewrite]
-# 远程重写规则
 
 [Script]
-# 脚本配置
 
 [Plugin]
-# 插件配置
-# 去广告插件（可选）
-# https://gitlab.com/lodepuly/vpn_tool/-/raw/main/Tool/Loon/Plugin/LoonGallery.plugin, policy = 全局拦截, enabled = true
 
 [MITM]
-# MITM 配置
 skip-server-cert-verify = false

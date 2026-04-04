@@ -1,0 +1,500 @@
+# Stash 覆写配置
+# 使用方法：在 Stash 中添加此覆写文件
+# 设置 -> 覆写 -> 安装覆写 -> 从 URL 安装（或本地导入）
+
+name: "自定义策略与规则"
+desc: "基于原 Clash Verge 覆写脚本转换"
+
+# ===== 代理组配置 =====
+proxy-groups:
+  # 主策略选择
+  - name: 节点选择
+    type: select
+    proxies:
+      - 延迟选优
+      - 故障转移
+      - 负载均衡
+      - 香港节点
+      - 新加坡节点
+      - 台湾节点
+      - 日本节点
+      - 韩国节点
+      - 美国节点
+      - 高倍节点
+      - 其他节点
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/adjust.svg
+
+  # 延迟选优（自动选择最快节点）
+  - name: 延迟选优
+    type: url-test
+    url: http://cp.cloudflare.com/generate_204
+    interval: 300
+    tolerance: 100
+    lazy: true
+    proxies:
+      - 负载均衡
+      - 香港节点
+      - 新加坡节点
+      - 台湾节点
+      - 韩国节点
+      - 日本节点
+      - 美国节点
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/speed.svg
+
+  # 负载均衡
+  - name: 负载均衡
+    type: select
+    proxies:
+      - 负载均衡(散列)
+      - 负载均衡(轮询)
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/balance.svg
+
+  # 故障转移
+  - name: 故障转移
+    type: fallback
+    url: http://cp.cloudflare.com/generate_204
+    interval: 300
+    lazy: true
+    proxies:
+      - 香港节点
+      - 新加坡节点
+      - 台湾节点
+      - 日本节点
+      - 韩国节点
+      - 美国节点
+      - 负载均衡
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/ambulance.svg
+
+  # 地区节点组
+  - name: 香港节点
+    type: url-test
+    url: http://cp.cloudflare.com/generate_204
+    interval: 300
+    tolerance: 100
+    lazy: true
+    filter: "(?i)(?:Hong[-\\s]*Kong|HK|香港|港区|🇭🇰)(?!.*(?:x[2-9]|x[1-9]\\d+|[2-9][xX倍]|[1-9]\\d+[xX倍]|Premium|Pro))"
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/hk.svg
+
+  - name: 新加坡节点
+    type: url-test
+    url: http://cp.cloudflare.com/generate_204
+    interval: 300
+    tolerance: 100
+    lazy: true
+    filter: "(?i)(?:Singapore|SG|新加坡|狮城|坡|🇸🇬)(?!.*(?:x[2-9]|x[1-9]\\d+|[2-9][xX倍]|[1-9]\\d+[xX倍]|Premium|Pro))"
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/sg.svg
+
+  - name: 台湾节点
+    type: url-test
+    url: http://cp.cloudflare.com/generate_204
+    interval: 300
+    tolerance: 100
+    lazy: true
+    filter: "(?i)(?:Taiwan|TW|台湾|台区|臺灣|🇹🇼)(?!.*(?:x[2-9]|x[1-9]\\d+|[2-9][xX倍]|[1-9]\\d+[xX倍]|Premium|Pro))"
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/tw.svg
+
+  - name: 日本节点
+    type: url-test
+    url: http://cp.cloudflare.com/generate_204
+    interval: 300
+    tolerance: 100
+    lazy: true
+    filter: "(?i)(?:Japan|JP|日本|东京|東京|日区|🇯🇵)(?!.*(?:x[2-9]|x[1-9]\\d+|[2-9][xX倍]|[1-9]\\d+[xX倍]|Premium|Pro))"
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/jp.svg
+
+  - name: 韩国节点
+    type: url-test
+    url: http://cp.cloudflare.com/generate_204
+    interval: 300
+    tolerance: 100
+    lazy: true
+    filter: "(?i)(?:Korea|KR|韩国|韓國|首尔|🇰🇷)(?!.*(?:x[2-9]|x[1-9]\\d+|[2-9][xX倍]|[1-9]\\d+[xX倍]|Premium|Pro))"
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/kr.svg
+
+  - name: 美国节点
+    type: url-test
+    url: http://cp.cloudflare.com/generate_204
+    interval: 300
+    tolerance: 100
+    lazy: true
+    filter: "(?i)(?:United[-\\s]*States|USA?|美国|美區|洛杉矶|西雅图|🇺🇸)(?!.*(?:x[2-9]|x[1-9]\\d+|[2-9][xX倍]|[1-9]\\d+[xX倍]|Premium|Pro))"
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/us.svg
+
+  # 特殊节点组
+  - name: 高倍节点
+    type: select
+    filter: "(?:x[2-9]|x[1-9]\\d+|[2-9][xX倍]|[1-9]\\d+[xX倍]|Premium|Pro)"
+    icon: https://fastly.jsdelivr.net/gh/wsyangzy/My-Profiles@main/icon/urltest.svg
+
+  - name: 其他节点
+    type: select
+    filter: "^(?:(?!(?:Hong[-\\s]*Kong|HK|香港|Singapore|SG|新加坡|Taiwan|TW|台湾|Japan|JP|日本|Korea|KR|韩国|United[-\\s]*States|USA?|美国|x[2-9]|x[1-9]\\d+|[2-9][xX倍]|[1-9]\\d+[xX倍]|Premium|Pro)).)*$"
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/unknown.svg
+
+  # 负载均衡组
+  - name: 负载均衡(散列)
+    type: load-balance
+    strategy: consistent-hashing
+    url: http://cp.cloudflare.com/generate_204
+    interval: 300
+    lazy: true
+    proxies:
+      - 香港节点
+      - 新加坡节点
+      - 台湾节点
+      - 日本节点
+      - 韩国节点
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/merry_go.svg
+
+  - name: 负载均衡(轮询)
+    type: load-balance
+    strategy: round-robin
+    url: http://cp.cloudflare.com/generate_204
+    interval: 300
+    lazy: true
+    proxies:
+      - 香港节点
+      - 新加坡节点
+      - 台湾节点
+      - 日本节点
+      - 韩国节点
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/balance.svg
+
+  # 功能组
+  - name: 解锁流媒体
+    type: select
+    proxies:
+      - DIRECT
+      - 节点选择
+      - 延迟选优
+      - 故障转移
+      - 负载均衡
+      - 香港节点
+      - 新加坡节点
+      - 台湾节点
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/youtube.svg
+
+  - name: 全局直连
+    type: select
+    proxies:
+      - DIRECT
+      - 节点选择
+      - 延迟选优
+      - 故障转移
+      - 负载均衡
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/link.svg
+
+  - name: 全局拦截
+    type: select
+    proxies:
+      - REJECT
+      - DIRECT
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/block.svg
+
+  - name: 漏网之鱼
+    type: select
+    proxies:
+      - 节点选择
+      - 延迟选优
+      - 故障转移
+      - 负载均衡
+      - 香港节点
+      - 全局直连
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/fish.svg
+
+# ===== 规则提供器配置 =====
+rule-providers:
+  # 自定义规则（本地文件）
+  AI:
+    type: file
+    behavior: classical
+    path: ./ruleset/custom/AI.yaml
+
+  WebRTC:
+    type: file
+    behavior: classical
+    path: ./ruleset/custom/WebRTC.yaml
+
+  # Loyalsoldier 规则集
+  direct:
+    type: http
+    behavior: domain
+    url: https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/direct.txt
+    path: ./ruleset/loyalsoldier/direct.yaml
+    interval: 86400
+
+  proxy:
+    type: http
+    behavior: domain
+    url: https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/proxy.txt
+    path: ./ruleset/loyalsoldier/proxy.yaml
+    interval: 86400
+
+  reject:
+    type: http
+    behavior: domain
+    url: https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/reject.txt
+    path: ./ruleset/loyalsoldier/reject.yaml
+    interval: 86400
+
+  private:
+    type: http
+    behavior: domain
+    url: https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/private.txt
+    path: ./ruleset/loyalsoldier/private.yaml
+    interval: 86400
+
+  icloud:
+    type: http
+    behavior: domain
+    url: https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/icloud.txt
+    path: ./ruleset/loyalsoldier/icloud.yaml
+    interval: 86400
+
+  apple:
+    type: http
+    behavior: domain
+    url: https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/apple.txt
+    path: ./ruleset/loyalsoldier/apple.yaml
+    interval: 86400
+
+  gfw:
+    type: http
+    behavior: domain
+    url: https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/gfw.txt
+    path: ./ruleset/loyalsoldier/gfw.yaml
+    interval: 86400
+
+  tldNotCn:
+    type: http
+    behavior: domain
+    url: https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/tld-not-cn.txt
+    path: ./ruleset/loyalsoldier/tld-not-cn.yaml
+    interval: 86400
+
+  telegramcidr:
+    type: http
+    behavior: ipcidr
+    url: https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/telegramcidr.txt
+    path: ./ruleset/loyalsoldier/telegramcidr.yaml
+    interval: 86400
+
+  lancidr:
+    type: http
+    behavior: ipcidr
+    url: https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/lancidr.txt
+    path: ./ruleset/loyalsoldier/lancidr.yaml
+    interval: 86400
+
+  cncidr:
+    type: http
+    behavior: ipcidr
+    url: https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/cncidr.txt
+    path: ./ruleset/loyalsoldier/cncidr.yaml
+    interval: 86400
+
+  applications:
+    type: http
+    behavior: classical
+    url: https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/applications.txt
+    path: ./ruleset/loyalsoldier/applications.yaml
+    interval: 86400
+
+  # blackmatrix7 规则集
+  Netflix:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/release/rule/Clash/Netflix/Netflix.yaml
+    path: ./ruleset/blackmatrix7/Netflix.yaml
+    interval: 86400
+
+  GitHub:
+    type: http
+    behavior: classical
+    url: https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/GitHub/GitHub.yaml
+    path: ./ruleset/blackmatrix7/GitHub.yaml
+    interval: 86400
+
+  Google:
+    type: http
+    behavior: classical
+    url: https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Google/Google.yaml
+    path: ./ruleset/blackmatrix7/Google.yaml
+    interval: 86400
+
+  GoogleFCM:
+    type: http
+    behavior: classical
+    url: https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/GoogleFCM/GoogleFCM.yaml
+    path: ./ruleset/blackmatrix7/GoogleFCM.yaml
+    interval: 86400
+
+  YouTube:
+    type: http
+    behavior: classical
+    url: https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/YouTube/YouTube.yaml
+    path: ./ruleset/blackmatrix7/YouTube.yaml
+    interval: 86400
+
+  YouTubeMusic:
+    type: http
+    behavior: classical
+    url: https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/YouTubeMusic/YouTubeMusic.yaml
+    path: ./ruleset/blackmatrix7/YouTubeMusic.yaml
+    interval: 86400
+
+  Discord:
+    type: http
+    behavior: classical
+    url: https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Discord/Discord.yaml
+    path: ./ruleset/blackmatrix7/Discord.yaml
+    interval: 86400
+
+  Twitter:
+    type: http
+    behavior: classical
+    url: https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Twitter/Twitter.yaml
+    path: ./ruleset/blackmatrix7/Twitter.yaml
+    interval: 86400
+
+  Instagram:
+    type: http
+    behavior: classical
+    url: https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Instagram/Instagram.yaml
+    path: ./ruleset/blackmatrix7/Instagram.yaml
+    interval: 86400
+
+  Threads:
+    type: http
+    behavior: classical
+    url: https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Threads/Threads.yaml
+    path: ./ruleset/blackmatrix7/Threads.yaml
+    interval: 86400
+
+  Facebook:
+    type: http
+    behavior: classical
+    url: https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Facebook/Facebook.yaml
+    path: ./ruleset/blackmatrix7/Facebook.yaml
+    interval: 86400
+
+  Pixiv:
+    type: http
+    behavior: classical
+    url: https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Pixiv/Pixiv.yaml
+    path: ./ruleset/blackmatrix7/Pixiv.yaml
+    interval: 86400
+
+  TikTok:
+    type: http
+    behavior: classical
+    url: https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/TikTok/TikTok.yaml
+    path: ./ruleset/blackmatrix7/TikTok.yaml
+    interval: 86400
+
+  Twitch:
+    type: http
+    behavior: classical
+    url: https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Twitch/Twitch.yaml
+    path: ./ruleset/blackmatrix7/Twitch.yaml
+    interval: 86400
+
+  Telegram:
+    type: http
+    behavior: classical
+    url: https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Telegram/Telegram.yaml
+    path: ./ruleset/blackmatrix7/Telegram.yaml
+    interval: 86400
+
+  Spotify:
+    type: http
+    behavior: classical
+    url: https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Spotify/Spotify.yaml
+    path: ./ruleset/blackmatrix7/Spotify.yaml
+    interval: 86400
+
+# ===== 分流规则配置 =====
+rules:
+  # 高优先级直连域名
+  - DOMAIN-SUFFIX,aowu.tv,DIRECT
+  - DOMAIN-KEYWORD,oracle,DIRECT
+
+  # AI 服务
+  - RULE-SET,AI,美国节点
+
+  # 开发工具
+  - RULE-SET,GitHub,香港节点
+
+  # 社交媒体
+  - RULE-SET,Twitter,香港节点
+  - RULE-SET,Instagram,韩国节点
+  - RULE-SET,Threads,韩国节点
+  - RULE-SET,Facebook,韩国节点
+  - RULE-SET,TikTok,韩国节点
+  - RULE-SET,Discord,节点选择
+  - RULE-SET,Pixiv,日本节点
+  - DOMAIN-SUFFIX,linux.do,节点选择
+
+  # 通讯应用
+  - RULE-SET,Telegram,节点选择
+
+  # 搜索引擎
+  - RULE-SET,Google,美国节点
+  - RULE-SET,GoogleFCM,美国节点
+  - DOMAIN-KEYWORD,microsoft365,美国节点
+
+  # 流媒体服务
+  - RULE-SET,Twitch,节点选择
+  - RULE-SET,Spotify,节点选择
+  - RULE-SET,YouTube,节点选择
+  - RULE-SET,YouTubeMusic,节点选择
+  - RULE-SET,Netflix,解锁流媒体
+
+  # 特殊规则
+  - PROCESS-NAME,language_server_windows_x64.exe,美国节点
+  - PROCESS-NAME,Antigravity.exe,美国节点
+  - PROCESS-NAME,Code.exe,DIRECT
+  - RULE-SET,WebRTC,REJECT
+  - DOMAIN-SUFFIX,battlenet.com,美国节点
+  - DOMAIN-SUFFIX,battle.net,美国节点
+  - DOMAIN-SUFFIX,blizzard.com,美国节点
+  - DOMAIN-KEYWORD,hf.space,美国节点
+  - DOMAIN-SUFFIX,anyrouter.top,香港节点
+  - DOMAIN-KEYWORD,elysiver,香港节点
+
+  # 直连域名
+  - DOMAIN-SUFFIX,privnode.com,DIRECT
+  - DOMAIN-KEYWORD,openclaudecode,DIRECT
+  - DOMAIN-SUFFIX,right.codes,DIRECT
+  - DOMAIN-SUFFIX,featureassets.org,DIRECT
+  - DOMAIN-KEYWORD,foxcode,DIRECT
+  - DOMAIN-KEYWORD,88code,DIRECT
+  - DOMAIN-KEYWORD,duckcoding,DIRECT
+  - DOMAIN-SUFFIX,packyapi.com,DIRECT
+  - DOMAIN-SUFFIX,cubence.com,DIRECT
+  - DOMAIN-KEYWORD,elysia,DIRECT
+
+  # 系统规则
+  - DOMAIN,clash.razord.top,DIRECT
+  - DOMAIN,yacd.haishan.me,DIRECT
+
+  # 基础规则集
+  - RULE-SET,private,DIRECT
+  - RULE-SET,icloud,DIRECT
+  - RULE-SET,apple,DIRECT
+  - RULE-SET,reject,REJECT
+  - RULE-SET,proxy,节点选择
+  - RULE-SET,direct,DIRECT
+  - RULE-SET,gfw,节点选择
+  - RULE-SET,tldNotCn,节点选择
+  - RULE-SET,lancidr,DIRECT,no-resolve
+  - RULE-SET,cncidr,DIRECT,no-resolve
+  - RULE-SET,telegramcidr,节点选择,no-resolve
+  - RULE-SET,applications,DIRECT
+
+  # 地理位置规则
+  - GEOIP,LAN,DIRECT,no-resolve
+  - GEOIP,CN,DIRECT,no-resolve
+
+  # 兜底规则
+  - MATCH,漏网之鱼

@@ -1,0 +1,225 @@
+name: 自定义策略与规则(简化版)
+desc: 不依赖 proxy-providers 的覆写配置
+
+# 代理组配置（完全覆盖模式）
+proxy-groups: #!replace
+  # 主策略选择
+  - name: 节点选择
+    type: select
+    proxies:
+      - 延迟选优
+      - 故障转移
+      - 负载均衡
+      - 香港节点
+      - 新加坡节点
+      - 台湾节点
+      - 日本节点
+      - 韩国节点
+      - 美国节点
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/adjust.svg
+
+  # 延迟选优（自动选择最快节点）
+  - name: 延迟选优
+    type: url-test
+    url: http://cp.cloudflare.com/generate_204
+    interval: 300
+    tolerance: 100
+    lazy: true
+    include-all: true
+    filter: ".*"
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/speed.svg
+
+  # 负载均衡
+  - name: 负载均衡
+    type: select
+    proxies:
+      - 负载均衡(散列)
+      - 负载均衡(轮询)
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/balance.svg
+
+  # 故障转移
+  - name: 故障转移
+    type: fallback
+    url: http://cp.cloudflare.com/generate_204
+    interval: 300
+    lazy: true
+    include-all: true
+    filter: ".*"
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/ambulance.svg
+
+  # 地区节点组
+  - name: 香港节点
+    type: url-test
+    url: http://cp.cloudflare.com/generate_204
+    interval: 300
+    tolerance: 100
+    lazy: true
+    include-all: true
+    filter: "(?i)(?:Hong[-\\s]*Kong|HK|香港|港区|🇭🇰)(?!.*(?:x[2-9]|x[1-9]\\d+|[2-9][xX倍]|[1-9]\\d+[xX倍]|Premium|Pro))"
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/hk.svg
+
+  - name: 新加坡节点
+    type: url-test
+    url: http://cp.cloudflare.com/generate_204
+    interval: 300
+    tolerance: 100
+    lazy: true
+    include-all: true
+    filter: "(?i)(?:Singapore|SG|新加坡|狮城|坡|🇸🇬)(?!.*(?:x[2-9]|x[1-9]\\d+|[2-9][xX倍]|[1-9]\\d+[xX倍]|Premium|Pro))"
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/sg.svg
+
+  - name: 台湾节点
+    type: url-test
+    url: http://cp.cloudflare.com/generate_204
+    interval: 300
+    tolerance: 100
+    lazy: true
+    include-all: true
+    filter: "(?i)(?:Taiwan|TW|台湾|台区|臺灣|🇹🇼)(?!.*(?:x[2-9]|x[1-9]\\d+|[2-9][xX倍]|[1-9]\\d+[xX倍]|Premium|Pro))"
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/tw.svg
+
+  - name: 日本节点
+    type: url-test
+    url: http://cp.cloudflare.com/generate_204
+    interval: 300
+    tolerance: 100
+    lazy: true
+    include-all: true
+    filter: "(?i)(?:Japan|JP|日本|东京|東京|日区|🇯🇵)(?!.*(?:x[2-9]|x[1-9]\\d+|[2-9][xX倍]|[1-9]\\d+[xX倍]|Premium|Pro))"
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/jp.svg
+
+  - name: 韩国节点
+    type: url-test
+    url: http://cp.cloudflare.com/generate_204
+    interval: 300
+    tolerance: 100
+    lazy: true
+    include-all: true
+    filter: "(?i)(?:Korea|KR|韩国|韓國|首尔|🇰🇷)(?!.*(?:x[2-9]|x[1-9]\\d+|[2-9][xX倍]|[1-9]\\d+[xX倍]|Premium|Pro))"
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/kr.svg
+
+  - name: 美国节点
+    type: url-test
+    url: http://cp.cloudflare.com/generate_204
+    interval: 300
+    tolerance: 100
+    lazy: true
+    include-all: true
+    filter: "(?i)(?:United[-\\s]*States|USA?|美国|美區|洛杉矶|西雅图|🇺🇸)(?!.*(?:x[2-9]|x[1-9]\\d+|[2-9][xX倍]|[1-9]\\d+[xX倍]|Premium|Pro))"
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/us.svg
+
+  # 负载均衡组
+  - name: 负载均衡(散列)
+    type: load-balance
+    strategy: consistent-hashing
+    url: http://cp.cloudflare.com/generate_204
+    interval: 300
+    lazy: true
+    proxies:
+      - 香港节点
+      - 新加坡节点
+      - 台湾节点
+      - 日本节点
+      - 韩国节点
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/merry_go.svg
+
+  - name: 负载均衡(轮询)
+    type: load-balance
+    strategy: round-robin
+    url: http://cp.cloudflare.com/generate_204
+    interval: 300
+    lazy: true
+    proxies:
+      - 香港节点
+      - 新加坡节点
+      - 台湾节点
+      - 日本节点
+      - 韩国节点
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/balance.svg
+
+  # 功能组
+  - name: 解锁流媒体
+    type: select
+    proxies:
+      - DIRECT
+      - 节点选择
+      - 延迟选优
+      - 故障转移
+      - 负载均衡
+      - 香港节点
+      - 新加坡节点
+      - 台湾节点
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/youtube.svg
+
+  - name: 全局直连
+    type: select
+    proxies:
+      - DIRECT
+      - 节点选择
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/link.svg
+
+  - name: 漏网之鱼
+    type: select
+    proxies:
+      - 节点选择
+      - 延迟选优
+      - 故障转移
+      - 负载均衡
+      - 香港节点
+      - 全局直连
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/fish.svg
+
+# 规则提供器配置
+rule-providers:
+  direct:
+    type: http
+    behavior: domain
+    url: https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/direct.txt
+    path: ./ruleset/direct.yaml
+    interval: 86400
+
+  proxy:
+    type: http
+    behavior: domain
+    url: https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/proxy.txt
+    path: ./ruleset/proxy.yaml
+    interval: 86400
+
+  reject:
+    type: http
+    behavior: domain
+    url: https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/reject.txt
+    path: ./ruleset/reject.yaml
+    interval: 86400
+
+  gfw:
+    type: http
+    behavior: domain
+    url: https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/gfw.txt
+    path: ./ruleset/gfw.yaml
+    interval: 86400
+
+  cncidr:
+    type: http
+    behavior: ipcidr
+    url: https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/cncidr.txt
+    path: ./ruleset/cncidr.yaml
+    interval: 86400
+
+# 分流规则配置
+rules:
+  - DOMAIN-SUFFIX,aowu.tv,DIRECT
+  - DOMAIN-KEYWORD,oracle,DIRECT
+  - DOMAIN-SUFFIX,linux.do,节点选择
+  - DOMAIN-SUFFIX,battlenet.com,美国节点
+  - DOMAIN-SUFFIX,battle.net,美国节点
+  - DOMAIN-SUFFIX,blizzard.com,美国节点
+  - DOMAIN-SUFFIX,privnode.com,DIRECT
+  - DOMAIN-KEYWORD,openclaudecode,DIRECT
+  - RULE-SET,reject,REJECT
+  - RULE-SET,proxy,节点选择
+  - RULE-SET,direct,DIRECT
+  - RULE-SET,gfw,节点选择
+  - RULE-SET,cncidr,DIRECT
+  - GEOIP,CN,DIRECT
+  - MATCH,漏网之鱼

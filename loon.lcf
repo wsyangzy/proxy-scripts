@@ -38,11 +38,11 @@ KR = url-test,KR_Filter,img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@ma
 US = url-test,US_Filter,img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png
 负载均衡 = load-balance, HK,TW,SG,KR, url = http://cp.cloudflare.com/generate_204, interval = 60, max-timeout = 2000, algorithm = pcc, img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin.png
 故障转移 = fallback, HK,TW,SG,KR, url = http://cp.cloudflare.com/generate_204, interval = 60, max-timeout = 2000, img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png
-国外媒体, Available,HK,US,DIRECT,REJECT, img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ForeignMedia.png
-国内媒体, Available,HK,US,DIRECT,REJECT, img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Media.png
-游戏平台, Available,HK,US,DIRECT,REJECT, img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Game.png
-广告拦截, Available,REJECT, img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/AdBlack.png
-漏网之鱼, Available,HK,US,DIRECT,REJECT, img-url = https://fastly.jsdelivr.net/gh/shindgewongxj/WHATSINStash@main/icon/fishport.png
+国内媒体 = select, Available,HK,US,DIRECT,REJECT, img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Media.png
+国外媒体 = select, Available,HK,US,DIRECT,REJECT, img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ForeignMedia.png
+游戏平台 = select, Available,HK,US,DIRECT,REJECT, img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Game.png
+广告拦截 = select, Available,REJECT, img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/AdBlack.png
+漏网之鱼 = select, Available,HK,US,DIRECT,REJECT, img-url = https://fastly.jsdelivr.net/gh/shindgewongxj/WHATSINStash@main/icon/fishport.png
 
 [Remote Filter]
 ALL_Filter = NameRegex, FilterKey = ".*"

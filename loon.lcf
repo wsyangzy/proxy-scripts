@@ -29,15 +29,20 @@ bypass-tun=10.0.0.0/8, 100.64.0.0/10, 127.0.0.0/8, 169.254.0.0/16, 172.16.0.0/12
 [Proxy Chain]
 
 [Proxy Group]
-Available = select,HK,TW,img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Available.png
-HK = fallback,HK_Filter,interval = 600,max-timeout = 3000,img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
-TW = url-test,TW_Filter,img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Taiwan.png
-SG = url-test,SG_Filter,img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png
-JP = url-test,JP_Filter,img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png
-KR = url-test,KR_Filter,img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Korea.png
-US = url-test,US_Filter,img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png
-负载均衡 = load-balance, HK,TW,SG,KR, url = http://cp.cloudflare.com/generate_204, interval = 60, max-timeout = 2000, algorithm = pcc, img-url = https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/balance.svg
-故障转移 = load-balance, HK,TW,SG,KR, url = http://cp.cloudflare.com/generate_204, interval = 60, max-timeout = 2000, algorithm = pcc, img-url = https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/ambulance.svg
+Available = select,HK,TW,SG,KR,JP,US,DIRECT,img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Available.png
+HK = fallback,HK_Filter,interval = 600,max-timeout = 3000,img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png
+TW = url-test,TW_Filter,img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png
+SG = url-test,SG_Filter,img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png
+JP = url-test,JP_Filter,img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png
+KR = url-test,KR_Filter,img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Korea.png
+US = url-test,US_Filter,img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png
+负载均衡 = load-balance, HK,TW,SG,KR, url = http://cp.cloudflare.com/generate_204, interval = 60, max-timeout = 2000, algorithm = pcc, img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin.png
+故障转移 = fallback, HK,TW,SG,KR, url = http://cp.cloudflare.com/generate_204, interval = 60, max-timeout = 2000, img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png
+国外媒体, Available,HK,US,DIRECT,REJECT, img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ForeignMedia.png
+国内媒体, Available,HK,US,DIRECT,REJECT, img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Media.png
+游戏平台, Available,HK,US,DIRECT,REJECT, img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Game.png
+广告拦截, Available,REJECT, img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/AdBlack.png
+漏网之鱼, Available,HK,US,DIRECT,REJECT, img-url = https://fastly.jsdelivr.net/gh/shindgewongxj/WHATSINStash@main/icon/fishport.png
 
 [Remote Filter]
 ALL_Filter = NameRegex, FilterKey = ".*"
@@ -58,11 +63,9 @@ IP-CIDR, 198.18.0.1/16, DIRECT
 IP-CIDR, 198.18.0.0/15, DIRECT
 IP-CIDR6, fc00::/18, DIRECT
 
-FINAL,Available
+FINAL,漏网之鱼
 
 [Remote Rule]
-https://raw.githubusercontent.com/Loon0x00/LoonLiteRules/main/proxy/YouTube.list, policy=Available, tag=YouTube, enabled=true
-https://raw.githubusercontent.com/Loon0x00/LoonLiteRules/main/proxy/Telegram.list, policy=Available, tag=Telegram, enabled=true
 https://raw.githubusercontent.com/Loon0x00/LoonLiteRules/main/direct/cn.list, policy=DIRECT, tag=GEOIP_CN, enabled=true
 # blackmatrix7 规则集
 https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Telegram/Telegram.list, policy = Available, tag = Telegram, enabled = true
@@ -81,6 +84,38 @@ https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/
 https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Apple/Apple.list, policy = DIRECT, tag = Apple, enabled = true
 https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Proxy/Proxy.list, policy = Available, tag = 全球代理, enabled = true
 https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/China/China.list, policy = DIRECT, tag = 国内网站, enabled = true
+
+# AI 服务
+https://whatshub.top/rule/ai.list, tag=AI服务, policy = Available, enabled=true
+
+# 社交通讯
+https://whatshub.top/rule/Reddit.list, tag=Reddit, policy = Available, enabled=true
+https://whatshub.top/rule/Discord.list, tag=Discord, policy = Available, enabled=true
+
+# 游戏平台
+https://whatshub.top/rule/PlayStation.list, tag=PlayStation, policy = 游戏平台, enabled=true
+https://whatshub.top/rule/Epic.list, tag=Epic, policy = 游戏平台, enabled=true
+https://whatshub.top/rule/Sony.list, tag=Sony, policy = 游戏平台, enabled=true
+https://whatshub.top/rule/Steam.list, tag=Steam, policy = 游戏平台, enabled=true
+https://whatshub.top/rule/Nintendo.list, tag=Nintendo, policy = 游戏平台, enabled=true
+https://whatshub.top/rule/WanMeiShiJie.list, tag=完美世界, policy = 游戏平台, enabled=true
+https://whatshub.top/rule/Blizzard.list, tag=暴雪, policy = 游戏平台, enabled=true
+
+# 流媒体
+https://whatshub.top/rule/BiliBili.list, tag=哔哩哔哩, policy = 国内媒体, enabled=true
+https://whatshub.top/rule/ChinaMedia.list, tag=国内媒体, policy = 国内媒体, enabled=true
+https://whatshub.top/rule/ProxyMedia.list, tag=国外媒体, policy = 国外媒体, enabled=true
+https://whatshub.top/rule/Twitch.list, tag=Twitch, policy = 国外媒体, enabled=true
+
+# 其他服务
+https://whatshub.top/rule/PayPal.list, tag=PayPal, policy = Available, enabled=true
+
+# 基础规则
+https://whatshub.top/rule/Proxy.list, tag=代理规则, policy = Available, enabled=true
+https://whatshub.top/rule/ASN-CN.list, tag=国内ASN, policy = DIRECT, tag = 国内网站, enabled = true
+https://whatshub.top/rule/AntiAD.list, tag=广告拦截, policy = 广告拦截, tag = 国内网站, enabled = true
+
+
 
 [Rewrite]
 

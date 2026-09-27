@@ -566,15 +566,28 @@ class RuleManager {
   static createRules() {
     return [
       // ============================================
-      // 0. 高优先级直连域名 - 最先匹配
+      // 0. 高优先级自定义域名 - 最先匹配
       // ============================================
       "DOMAIN-SUFFIX,aowu.tv,DIRECT",
       "DOMAIN-KEYWORD,oracle,DIRECT",
+      "DOMAIN-KEYWORD,release.gitkraken.com,REJECT",
+      "DOMAIN-KEYWORD,api.gitkraken.com,REJECT",
+      "DOMAIN-KEYWORD,gloapi.gitkraken.com,REJECT",
+      "DOMAIN-KEYWORD,zhipuaishengchan,DIRECT",
+      "DOMAIN-SUFFIX,dc.meslcloud.org,DIRECT",
+      "DOMAIN-KEYWORD,sharedchat,DIRECT",
 
       // ============================================
       // 1. AI 服务 - 需要美国节点
       // ============================================
       "RULE-SET,AI,美国节点",
+
+      // ============================================
+      // 5. 搜索引擎 - Google 全系列
+      // ============================================
+      "RULE-SET,Google,美国节点",
+      "RULE-SET,GoogleFCM,美国节点",
+      "DOMAIN-KEYWORD,microsoft365,美国节点",
 
       // ============================================
       // 2. 开发工具 - 优先使用香港节点
@@ -599,13 +612,6 @@ class RuleManager {
       "RULE-SET,Telegram,节点选择",
 
       // ============================================
-      // 5. 搜索引擎 - Google 全系列
-      // ============================================
-      "RULE-SET,Google,美国节点",
-      "RULE-SET,GoogleFCM,美国节点",
-      "DOMAIN-KEYWORD,microsoft365,美国节点",
-
-      // ============================================
       // 6. 流媒体服务
       // ============================================
       "RULE-SET,Twitch,节点选择",
@@ -626,8 +632,8 @@ class RuleManager {
       "DOMAIN-SUFFIX,blizzard.com,美国节点",
       "DOMAIN-KEYWORD,hf.space,美国节点",
       // "DOMAIN-SUFFIX,anthropic.com,REJECT",
-      "DOMAIN-SUFFIX,anyrouter.top,香港节点",
-      // "DOMAIN-SUFFIX,a-ocnfniawgw.cn-shanghai.fcapp.run,香港节点",
+      "DOMAIN-SUFFIX,anyrouter.top,故障转移",
+      "DOMAIN-SUFFIX,a-ocnfniawgw.cn-shanghai.fcapp.run,故障转移",
       "DOMAIN-KEYWORD,elysiver,香港节点",
 
       // ============================================
@@ -639,11 +645,10 @@ class RuleManager {
       "DOMAIN-SUFFIX,featureassets.org,DIRECT",
       "DOMAIN-KEYWORD,foxcode,DIRECT",
       "DOMAIN-KEYWORD,88code,DIRECT",
-      "DOMAIN-KEYWORD,duckcoding,DIRECT",
       "DOMAIN-SUFFIX,packyapi.com,DIRECT",
       "DOMAIN-SUFFIX,cubence.com,DIRECT",
       "DOMAIN-KEYWORD,elysia,DIRECT",
-
+      "DOMAIN-SUFFIX,aiberm.com,DIRECT",
 
       // ============================================
       // 9. 系统规则 - Clash 面板和工具
@@ -656,7 +661,7 @@ class RuleManager {
       // ============================================
       "RULE-SET,private,DIRECT",      // 私有网络
       "RULE-SET,icloud,DIRECT",       // iCloud服务
-      "RULE-SET,apple,DIRECT",        // Apple服务
+      "RULE-SET,apple,美国节点",        // Apple服务
       "RULE-SET,reject,REJECT",       // 广告拦截
       "RULE-SET,proxy,节点选择",       // 需要代理的域名
       "RULE-SET,direct,DIRECT",       // 直连域名

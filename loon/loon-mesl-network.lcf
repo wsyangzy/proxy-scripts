@@ -1,0 +1,172 @@
+[General]
+ip-mode = dual
+dns-server = 223.5.5.5,119.29.29.29
+doh-server = https://radar.rlose.com/api-query,https://zone.rlose.com:39933/api-query
+sni-sniffing = true
+dns-reject-mode = LoopbackIP
+domain-reject-mode = DNS
+wifi-access-http-port = 7222
+wifi-access-socks5-port = 7221
+allow-wifi-access = false
+interface-mode = auto
+real-ip = dns.msftncsi.com,*.srv.nintendo.net,*.stun.playstation.net,xbox.*.microsoft.com,*.xboxlive.com,*.turn.twilio.com,*.stun.twilio.com,stun.syncthing.net,stun.*
+test-timeout = 5
+disconnect-on-policy-change = false
+internet-test-url = http://connectivitycheck.platform.hicloud.com/generate_204
+proxy-test-url = http://www.gstatic.com/generate_204
+resource-parser = https://raw.githubusercontent.com/sub-store-org/Sub-Store/release/sub-store-parser.loon.min.js
+geoip-url = https://geodata.kelee.one/Country-Masaiki.mmdb
+ipasn-url = https://geodata.kelee.one/GeoLite2-ASN-P3TERX.mmdb
+skip-proxy = 192.168.0.0/16,10.0.0.0/8,172.16.0.0/12,localhost,*.local,e.crashlynatics.com,fc00::/7,fe80::/10
+bypass-tun = 10.0.0.0/8,100.64.0.0/10,127.0.0.0/8,169.254.0.0/16,172.16.0.0/12,192.0.0.0/24,192.0.2.0/24,192.88.99.0/24,192.168.0.0/16,198.51.100.0/24,203.0.113.0/24,224.0.0.0/4,255.255.255.255/32
+
+[Proxy]
+
+[Remote Proxy]
+MESL = https://em.mesl.cloud/ems/get?token=6ade340a1c70292e87eceb900fc2baf8&name=MESL,parser-enabled = true,udp=true,block-quic=true,fast-open=default,vmess-aead=true,skip-cert-verify=true,enabled=true,flexible-sni=false,img-url=https://fastly.jsdelivr.net/gh/cc63/ICON@master/Color/MESL.png
+Sakura Cat = https://0b96e976-9ec3-44c0-aa2b-30bf8b0792ea.com/sabusuku?token=f85445f795ccfadeb4de74e0fa1e0880,parser-enabled = true,udp=true,block-quic=true,fast-open=default,vmess-aead=true,skip-cert-verify=true,enabled=false,flexible-sni=false,img-url=https://fastly.jsdelivr.net/gh/lige47/QuanX-icon-rule@main/icon/06jichang/SakuraCat.png
+# 订阅链接
+
+[Proxy Chain]
+
+[Proxy Group]
+Available = select,HK,TW,SG,KR,JP,US,负载均衡,故障转移,DIRECT,img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Available.png
+HK = url-test,HK_Filter,interval = 600,img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png
+TW = url-test,TW_Filter,interval = 600,img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png
+SG = url-test,SG_Filter,interval = 600,img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png
+JP = url-test,JP_Filter,interval = 600,img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png
+KR = url-test,KR_Filter,interval = 600,img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Korea.png
+US = url-test,US_Filter,interval = 600,img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png
+负载均衡 = load-balance,HK,TW,SG,KR,url = http://cp.cloudflare.com/generate_204,interval = 60,max-timeout = 2000,algorithm = pcc,img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin.png
+故障转移 = fallback,HK,TW,SG,KR,url = http://cp.cloudflare.com/generate_204,interval = 60,max-timeout = 2000,img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png
+国内媒体 = select,Available,HK,US,DIRECT,REJECT,img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Media.png
+国外媒体 = select,Available,HK,US,DIRECT,REJECT,img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ForeignMedia.png
+游戏平台 = select,Available,HK,US,DIRECT,REJECT,img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Game.png
+广告拦截 = select,Available,REJECT,img-url = https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/AdBlack.png
+漏网之鱼 = select,Available,HK,US,DIRECT,REJECT,img-url = https://fastly.jsdelivr.net/gh/shindgewongxj/WHATSINStash@main/icon/fishport.png
+
+[Remote Filter]
+ALL_Filter = NameRegex, FilterKey = ".*"
+HK_Filter = NameRegex, FilterKey = "(?i)(港|HK|Hong)"
+TW_Filter = NameRegex, FilterKey = "(?i)(台|TW|Tai)"
+JP_Filter = NameRegex, FilterKey = "(?i)(日本|川日|东京|大阪|泉日|埼玉|沪日|深日|JP|Japan)"
+KR_Filter = NameRegex, FilterKey = "(?i)(KR|Korea|KOR|首尔|韩|韓)"
+US_Filter = NameRegex, FilterKey = "(?i)(美|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|US|United States)"
+SG_Filter = NameRegex, FilterKey = "(?i)(新加坡|坡|狮城|SG|Singapore)"
+
+[Rule]
+# 当配置文件中没有任何有效策略组时，Loon将使用内置的PROXY策略组
+# 当配置文件中存在有效的策略组时，内置的PROXY策略组将不再允许被调用，仅可使用用户配置的策略组
+# 配置文件已自带远程GEOIP, cn, DIRECT规则，请勿在此添加
+# 请勿修改远程CN REGION规则的排序甚至删除
+# MESL 订阅及规则资源访问；GitHub 沿用当前 HK 策略
+DOMAIN-SUFFIX,em.mesl.cloud,DIRECT
+DOMAIN-SUFFIX,meslcloud.com,Available
+DOMAIN-SUFFIX,githubusercontent.com,HK
+IP-CIDR,28.0.0.1/8,DIRECT
+IP-CIDR,198.18.0.1/16,DIRECT
+IP-CIDR,198.18.0.0/15,DIRECT
+# IPv6 本地地址范围与 MESL 对齐
+IP-CIDR6,::1/128,DIRECT,no-resolve
+IP-CIDR6,fc00::/7,DIRECT,no-resolve
+IP-CIDR6,fe80::/10,DIRECT,no-resolve
+
+FINAL,漏网之鱼
+
+[Remote Rule]
+https://raw.githubusercontent.com/Loon0x00/LoonLiteRules/main/direct/cn.list, policy=DIRECT, tag=GEOIP_CN, enabled=true
+# blackmatrix7 规则集
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Telegram/Telegram.list, policy=HK, tag=Telegram, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/GitHub/GitHub.list, policy=HK, tag=GitHub, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Google/Google.list, policy=HK, tag=Google, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/YouTube/YouTube.list, policy=Available, tag=YouTube, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Netflix/Netflix.list, policy=Available, tag=Netflix, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Disney/Disney.list, policy=Available, tag=Disney+, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Twitter/Twitter.list, policy=HK, tag=Twitter, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Facebook/Facebook.list, policy=KR, tag=Facebook, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Instagram/Instagram.list, policy=KR, tag=Instagram, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Spotify/Spotify.list, policy=Available, tag=Spotify, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/TikTok/TikTok.list, policy=KR, tag=TikTok, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/OpenAI/OpenAI.list, policy=US, tag=OpenAI, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Microsoft/Microsoft.list, policy=Available, tag=Microsoft, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Apple/Apple.list, policy=US, tag=Apple, enabled=true
+# MESL 补充规则：保留上方现有服务策略，补充规则置于通用代理列表之前
+# AI：延续现有 AI服务 的 Available；Apple Intelligence 延续 Apple 的 US
+https://raw.githubusercontent.com/meslcloud/Rule/refs/heads/main/Loon/Claude.list, policy=Available, tag=Claude, enabled=true
+https://raw.githubusercontent.com/meslcloud/Rule/refs/heads/main/Loon/AppleIntelligence.list, policy=US, tag=AppleIntelligence, enabled=true
+https://raw.githubusercontent.com/meslcloud/Rule/refs/heads/main/Loon/Perplexity.list, policy=Available, tag=Perplexity, enabled=true
+https://raw.githubusercontent.com/meslcloud/Rule/refs/heads/main/Loon/Cursor.list, policy=Available, tag=Cursor, enabled=true
+https://raw.githubusercontent.com/meslcloud/Rule/refs/heads/main/Loon/Ai_other.list, policy=Available, tag=Ai_other, enabled=true
+# 社交通讯
+https://raw.githubusercontent.com/meslcloud/Rule/refs/heads/main/Loon/Line.list, policy=Available, tag=Line, enabled=true
+https://raw.githubusercontent.com/meslcloud/Rule/refs/heads/main/Loon/Linkedin.list, policy=Available, tag=Linkedin, enabled=true
+https://raw.githubusercontent.com/meslcloud/Rule/refs/heads/main/Loon/Whatsapp.list, policy=Available, tag=Whatsapp, enabled=true
+# 流媒体
+https://raw.githubusercontent.com/meslcloud/Rule/refs/heads/main/Loon/PrimeVideo.list, policy=国外媒体, tag=PrimeVideo, enabled=true
+https://raw.githubusercontent.com/meslcloud/Rule/refs/heads/main/Loon/Abema.list, policy=国外媒体, tag=Abema, enabled=true
+https://raw.githubusercontent.com/meslcloud/Rule/refs/heads/main/Loon/BBC.list, policy=国外媒体, tag=BBC, enabled=true
+https://raw.githubusercontent.com/meslcloud/Rule/refs/heads/main/Loon/Dazn.list, policy=国外媒体, tag=Dazn, enabled=true
+https://raw.githubusercontent.com/meslcloud/Rule/refs/heads/main/Loon/Bahamut.list, policy=国外媒体, tag=Bahamut, enabled=true
+https://raw.githubusercontent.com/meslcloud/Rule/refs/heads/main/Loon/HBO.list, policy=国外媒体, tag=HBO, enabled=true
+# 其他服务
+https://raw.githubusercontent.com/meslcloud/Rule/refs/heads/main/Loon/PikPak.list, policy=Available, tag=PikPak, enabled=true
+https://raw.githubusercontent.com/meslcloud/Rule/refs/heads/main/Loon/Pornhub.list, policy=Available, tag=Pornhub, enabled=true
+# 拦截规则沿用现有 广告拦截 策略组的选择
+https://raw.githubusercontent.com/meslcloud/Rule/refs/heads/main/Loon/Hijacking.list, policy=广告拦截, tag=Hijacking, enabled=true
+https://raw.githubusercontent.com/meslcloud/Rule/refs/heads/main/Loon/Privacy.list, policy=广告拦截, tag=Privacy, enabled=true
+https://raw.githubusercontent.com/meslcloud/Rule/refs/heads/main/Loon/Advertising.list, policy=广告拦截, tag=Advertising, enabled=true
+
+# 原有通用规则
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Proxy/Proxy.list, policy=Available, tag=全球代理, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/China/China.list, policy=DIRECT, tag=国内网站, enabled=true
+
+# AI 服务
+https://yfamilys.com/rule/ai.list, policy=Available, tag=AI服务, enabled=true
+
+# 社交通讯
+https://yfamilys.com/rule/Reddit.list, policy=Available, tag=Reddit, enabled=true
+https://yfamilys.com/rule/Discord.list, policy=Available, tag=Discord, enabled=true
+
+# 游戏平台
+https://yfamilys.com/rule/PlayStation.list, policy=游戏平台, tag=PlayStation, enabled=true
+https://yfamilys.com/rule/Epic.list, policy=游戏平台, tag=Epic, enabled=true
+https://yfamilys.com/rule/Sony.list, policy=游戏平台, tag=Sony, enabled=true
+https://yfamilys.com/rule/Steam.list, policy=游戏平台, tag=Steam, enabled=true
+https://yfamilys.com/rule/Nintendo.list, policy=游戏平台, tag=Nintendo, enabled=true
+https://yfamilys.com/rule/WanMeiShiJie.list, policy=游戏平台, tag=完美世界, enabled=true
+https://yfamilys.com/rule/Blizzard.list, policy=游戏平台, tag=暴雪, enabled=true
+
+# 流媒体
+https://yfamilys.com/rule/BiliBili.list, policy=国内媒体, tag=哔哩哔哩, enabled=true
+https://yfamilys.com/rule/ChinaMedia.list, policy=国内媒体, tag=国内媒体, enabled=true
+https://yfamilys.com/rule/ProxyMedia.list, policy=国外媒体, tag=国外媒体, enabled=true
+https://yfamilys.com/rule/Twitch.list, policy=国外媒体, tag=Twitch, enabled=true
+
+# 其他服务
+https://yfamilys.com/rule/PayPal.list, policy=Available, tag=PayPal, enabled=true
+
+# 基础规则
+https://yfamilys.com/rule/Proxy.list, policy=Available, tag=代理规则, enabled=true
+https://yfamilys.com/rule/ASN-CN.list, policy=DIRECT, tag=国内ASN, enabled=true
+https://yfamilys.com/rule/AntiAD.list, policy=广告拦截, tag=广告拦截, enabled=true
+
+
+
+[Rewrite]
+
+[Script]
+
+[Plugin]
+https://wloc.app/modules/wloc.lpx, enabled=false
+https://kelee.one/Tool/Loon/Lpx/NodeLinkCheck.lpx, enabled=false
+https://kelee.one/Tool/Loon/Lpx/WARP_Node_Query.lpx, enabled=false
+https://kelee.one/Tool/Loon/Lpx/Google.lpx, enabled=true
+https://kelee.one/Tool/Loon/Lpx/Switch_github_mirror.lpx, enabled=false
+https://kelee.one/Tool/Loon/Lpx/Prevent_DNS_Leaks.lpx, enabled=true
+https://kelee.one/Tool/Loon/Lpx/AppleWeatherEnhancer.lpx, enabled=true
+https://kelee.one/Tool/Loon/Lpx/BlockAdvertisers.lpx, enabled=true
+https://kelee.one/Tool/Loon/Lpx/Block_HTTPDNS.lpx, enabled=false
+[Mitm]
+ca-p12 = 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
+ca-passphrase = B85TY06F
+skip-server-cert-verify = false

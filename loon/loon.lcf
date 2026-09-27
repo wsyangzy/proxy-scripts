@@ -112,8 +112,8 @@ https://whatshub.top/rule/PayPal.list, tag=PayPal, policy = Available, enabled=t
 
 # 基础规则
 https://whatshub.top/rule/Proxy.list, tag=代理规则, policy = Available, enabled=true
-https://whatshub.top/rule/ASN-CN.list, tag=国内ASN, policy = DIRECT, tag = 国内网站, enabled = true
-https://whatshub.top/rule/AntiAD.list, tag=广告拦截, policy = 广告拦截, tag = 国内网站, enabled = true
+https://whatshub.top/rule/ASN-CN.list, tag=国内ASN, policy = DIRECT, enabled = true
+https://whatshub.top/rule/AntiAD.list, tag=广告拦截, policy = 广告拦截, enabled = true
 
 
 

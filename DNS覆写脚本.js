@@ -1,0 +1,121 @@
+/**
+ * DNS 专用覆写脚本，适用于支持 main(config) 的 Clash 客户端。
+ * 配置来源：subscription/mesl.yaml 的 dns 配置块。
+ * 将本文件内容粘贴到独立的 JavaScript 覆写项中启用。
+ * 本脚本内置配置，修改来源文件后需要同步更新这里的配置。
+ */
+function main(config) {
+  if (!config || typeof config !== "object" || Array.isArray(config)) {
+    throw new TypeError("DNS 覆写需要一个有效的 Clash 配置对象。");
+  }
+
+  // 整体替换，避免旧的 DNS 策略与 mesl.yaml 的配置混用。
+  config.dns = {
+    enable: true,
+    listen: "0.0.0.0:1053",
+    "enhanced-mode": "fake-ip",
+    "fake-ip-range": "198.18.0.1/16",
+    "use-hosts": true,
+    "default-nameserver": ["223.5.5.5", "119.29.29.29", "114.114.114.114"],
+    nameserver: [
+      "https://zone.rlose.com:39933/api-query",
+      "https://radar.rlose.com/api-query",
+    ],
+    "fake-ip-filter": [
+      "*.lan",
+      "*.linksys.com",
+      "*.linksyssmartwifi.com",
+      "swscan.apple.com",
+      "mesu.apple.com",
+      "swquery.apple.com",
+      "swdownload.apple.com",
+      "swcdn.apple.com",
+      "swdist.apple.com",
+      "*.msftconnecttest.com",
+      "*.msftncsi.com",
+      "xbox.*.microsoft.com",
+      "xbox.*.*.microsoft.com",
+      "+.xboxlive.com",
+      "time.*.com",
+      "time.*.gov",
+      "time.*.edu.cn",
+      "time.*.apple.com",
+      "time1.*.com",
+      "time2.*.com",
+      "time3.*.com",
+      "time4.*.com",
+      "time5.*.com",
+      "time6.*.com",
+      "time7.*.com",
+      "ntp.*.com",
+      "ntp.*.com",
+      "ntp1.*.com",
+      "ntp2.*.com",
+      "ntp3.*.com",
+      "ntp4.*.com",
+      "ntp5.*.com",
+      "ntp6.*.com",
+      "ntp7.*.com",
+      "*.time.edu.cn",
+      "*.ntp.org.cn",
+      "+.pool.ntp.org",
+      "time1.cloud.tencent.com",
+      "lens.l.google.com",
+      "+.music.163.com",
+      "+.126.net",
+      "musicapi.taihe.com",
+      "music.taihe.com",
+      "songsearch.kugou.com",
+      "trackercdn.kugou.com",
+      "*.kuwo.cn",
+      "api-jooxtt.sanook.com",
+      "api.joox.com",
+      "joox.com",
+      "+.y.qq.com",
+      "+.music.tc.qq.com",
+      "aqqmusic.tc.qq.com",
+      "+.stream.qqmusic.qq.com",
+      "+.xiami.com",
+      "+.music.migu.cn",
+      "+.stun.*.*",
+      "+.stun.*.*.*",
+      "+.stun.*.*.*.*",
+      "+.stun.*.*.*.*.*",
+      "+.srv.nintendo.net",
+      "*.n.n.srv.nintendo.net",
+      "+.stun.playstation.net",
+      "+.battlenet.com.cn",
+      "+.wotgame.cn",
+      "+.wggames.cn",
+      "+.wowsgame.cn",
+      "+.wargaming.net",
+      "*.square-enix.com",
+      "*.finalfantasyxiv.com",
+      "*.ffxiv.com",
+      "*.ff14.sdo.com",
+      "ff.dorado.sdo.com",
+      "localhost.ptlogin2.qq.com",
+      "localhost.sec.qq.com",
+      "proxy.golang.org",
+      "+.qq.com",
+      "+.baidu.com",
+      "+.163.com",
+      "+.126.net",
+      "+.taobao.com",
+      "+.jd.com",
+      "+.tmall.com",
+      "*.mcdn.bilivideo.cn",
+      "+.nvidia.com",
+      "+.nvidia.cn",
+      "+.nvgs.nvidia.com",
+      "+.nvgs.nvidia.cn",
+      "shark007.net",
+    ],
+  };
+
+  return config;
+}
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { main };
+}

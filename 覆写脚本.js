@@ -166,6 +166,39 @@ class RuleProviderManager {
     };
   }
 
+  // 保留 DNS 仍在引用的原订阅规则集，避免整体替换后出现悬空引用。
+  static preserveDnsRuleProviders(config, ruleProviders) {
+    const originalProviders = config["rule-providers"] || {};
+    const referencedNames = new Set();
+
+    const collectReferences = (value) => {
+      if (typeof value === "string") {
+        if (value.startsWith("rule-set:")) {
+          value.slice("rule-set:".length).split(",").forEach((name) => {
+            if (name.trim()) referencedNames.add(name.trim());
+          });
+        }
+      } else if (Array.isArray(value)) {
+        value.forEach(collectReferences);
+      } else if (value && typeof value === "object") {
+        Object.entries(value).forEach(([key, entry]) => {
+          collectReferences(key);
+          collectReferences(entry);
+        });
+      }
+    };
+
+    collectReferences(config.dns);
+    for (const name of referencedNames) {
+      // 脚本已有定义优先；只从原订阅补齐缺失的 DNS 依赖。
+      if (
+        !Object.prototype.hasOwnProperty.call(ruleProviders, name) &&
+        Object.prototype.hasOwnProperty.call(originalProviders, name)
+      ) {
+        ruleProviders[name] = originalProviders[name];
+      }
+    }
+  }
   static createRuleProviders() {
     const cdn = ConfigConstants.CDN;
 
@@ -585,8 +618,8 @@ class RuleManager {
       // ============================================
       // 5. 搜索引擎 - Google 全系列
       // ============================================
-      "RULE-SET,Google,美国节点",
-      "RULE-SET,GoogleFCM,美国节点",
+      "RULE-SET,Google,节点选择",
+      "RULE-SET,GoogleFCM,节点选择",
       "DOMAIN-KEYWORD,microsoft365,美国节点",
 
       // ============================================
@@ -718,6 +751,7 @@ function main(config) {
 
     // 生成各项配置
     const ruleProviders = RuleProviderManager.createRuleProviders();
+    RuleProviderManager.preserveDnsRuleProviders(config, ruleProviders);
     const proxyGroups = ProxyGroupManager.createProxyGroups(nodeNames);
     const rules = RuleManager.createRules();
 
